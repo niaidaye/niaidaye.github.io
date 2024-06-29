@@ -6,7 +6,8 @@
 
 ​	我记得有**来自2300年前的“漂流瓶”** 的故事，是这样的：在战国时代一位叫公乘得和一位叫曼的人，在石头上刻下十九个字：
 
-![监罟尤臣公乘得守丘，丌臼将曼敢谒后尗贤者](https://pics5.baidu.com/feed/caef76094b36acaf3128254a93726f1d03e99cf1.jpeg@f_auto?token=03c3b0f0ec8fcf0dcb3a58077fe7e2e0#pic_center =50x50"公乘得守丘刻石")
+![公乘得守丘刻石](https://github.com/niaidaye/niaidaye.github.io/assets/27543204/03efb4e4-c1c4-4545-b346-b3579571dbbe#pic_center "监罟尤臣公乘得守丘，丌臼将曼敢谒后尗贤者")
+
 
 简单翻译过来就是：监管捕鱼的罪臣公乘得在此看守陵墓，他的旧将曼敬告后来善良贤德的人。
 
