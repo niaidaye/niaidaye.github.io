@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/27543204?v=4"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="---
+
+最近刚，学到MySQL事务相关的，知识点，想和大家简单聊聊，在MySQL的InnoDB引擎中是如何多个事务同时执行如何保证数据的一致性。">
+<meta property="og:title" content="MySQL（InnoDB）事务的多版本并发控制（一）">
+<meta property="og:description" content="---
+
+最近刚，学到MySQL事务相关的，知识点，想和大家简单聊聊，在MySQL的InnoDB引擎中是如何多个事务同时执行如何保证数据的一致性。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://niaidaye.github.io/post/MySQL%EF%BC%88InnoDB%EF%BC%89-shi-wu-de-duo-ban-ben-bing-fa-kong-zhi-%EF%BC%88-yi-%EF%BC%89.html">
+<meta property="og:image" content="https://avatars.githubusercontent.com/u/27543204?v=4">
+<title>MySQL（InnoDB）事务的多版本并发控制（一）</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">MySQL（InnoDB）事务的多版本并发控制（一）</h1>
+<div class="title-right">
+    <a href="https://niaidaye.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/niaidaye/niaidaye.github.io/issues/2" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><hr>
+<p>最近刚，学到MySQL事务相关的，知识点，想和大家简单聊聊，在MySQL的InnoDB引擎中是如何多个事务同时执行如何保证数据的一致性。</p>
+<p>首先我会简单介绍一下什么是事务：</p>
+<h2>什么是事务？</h2>
+<p>在数据库中，事务是这样来定义的：保证一组数据库操作，要么全部成功，要么都全部失败。</p>
+<h2>隔离性与隔离级别</h2>
+<p>在说到事务，肯定会想到ACID（Atomicity、Consistency、Isolation、Durability，即原子性、一致性、隔离性、持久性），这里I - Isolation “隔离性”，就是后面会讲到的。</p>
+<p>现在有这样一个背景，当数据库上有多个事务同时执行的时候，就可能会出现：脏读（dirty read）、不可重复读（non-repeatable read）、幻读（phantom read）的问题，而为了解决这些问题，于是就有“隔离级别”的概念</p>
+<p>在SQL定义的标准事务隔离级别包括：</p>
+<p>读未提交（read uncommitted）、读提交（read committed）、可重复读（repeatable read）和串行化（serializable ）。</p>
+<ul>
+<li>读未提交（RU）：当事务还未提交时，事务对数据的修改，在别事务中都是可以被看见的，</li>
+<li>读已提交（RC）：当事务提交以后，事务对数据的修改，才能在别的事务中可见</li>
+<li>可重复读（RR）：当一个事务执行过程中的数据，总是跟这个事务开启时的数据保持一致，不受别的事务提交影响。当然这个事务未提交的变更也是对其他事务不可见的。</li>
+<li>串行化（serializable）：对同一行记录，“写”加“写锁”、“读”加“读锁”。当出现读写锁冲突的时候，后访问的事务必须等待前一个事务执行完毕才能继续执行。</li>
+</ul>
+<h2>事务隔离的具体实现（RR隔离级别）</h2>
+<p>了解过事务的隔离级别，那就以可重复读这个隔离级别，来了解事务隔离具体是如何实现的。</p>
+<p>在MySQL中，每条记录在更新的时候，都会同时记录一条回滚操作。记录上的最新值都能通过回滚操作，得到上一个状态的值。</p>
+<p>假设一值从1，被顺序改成了，2、3、4，在回滚日志里面就会有类似记录。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/niaidaye/niaidaye.github.io/assets/27543204/9fae482a-e9f7-4d2d-a354-464d731aa685"><img src="https://github.com/niaidaye/niaidaye.github.io/assets/27543204/9fae482a-e9f7-4d2d-a354-464d731aa685" alt="MySQL回滚日志记录" style="max-width: 100%;"></a></p>
+<p>简单说明一下，当前值是4，但是在查询这条记录的时候，不同时刻启动的事务会有不同的read-view（视图）。如上图，在Read-view A、B、C里，这个记录的值分别是1、2、4，所以同一个记录在系统中就可以存在多个版本，这就是数据库的多版本并发控制（MVCC）。</p>
+<p>当对于 read-view A，要得到 1，就必须将当前值依次执行图中所有的回滚操作得到。</p>
+<p>同时如果有另一事务正在将4改成5，这个事务跟 read-view A、B、C对应的事务是不会冲突。</p>
+<p>**注意：**read-view是在事务启动时候创建。</p>
+<hr>
+<p>上面是针对查询的，MVCC简单理解，下面我将以更新的角度，来继续深入理解MVCC，探讨事务到底是隔离还是不隔离的？</p>
+<hr>
+<h2>深入理解MVCC</h2>
+<p>我举个例子，</p>
+<p>这是 t 表的初始化语句</p>
+<div class="highlight highlight-source-sql"><pre class="notranslate"><span class="pl-k">CREATE</span> <span class="pl-k">TABLE</span> `<span class="pl-en">t</span>` (
+  <span class="pl-s"><span class="pl-pds">`</span>id<span class="pl-pds">`</span></span> <span class="pl-k">int</span>(<span class="pl-c1">11</span>) <span class="pl-k">NOT NULL</span>,
+  <span class="pl-s"><span class="pl-pds">`</span>k<span class="pl-pds">`</span></span> <span class="pl-k">int</span>(<span class="pl-c1">11</span>) DEFAULT <span class="pl-k">NULL</span>,
+  <span class="pl-k">PRIMARY KEY</span> (<span class="pl-s"><span class="pl-pds">`</span>id<span class="pl-pds">`</span></span>)
+) ENGINE<span class="pl-k">=</span>InnoDB;
+<span class="pl-k">INSERT INTO</span> t(id, k) <span class="pl-k">VALUES</span>(<span class="pl-c1">1</span>,<span class="pl-c1">1</span>),(<span class="pl-c1">2</span>,<span class="pl-c1">2</span>);</pre></div>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/niaidaye/niaidaye.github.io/assets/27543204/c0ea04fb-2b8e-442b-9cf7-cb556ff5cda9"><img src="https://github.com/niaidaye/niaidaye.github.io/assets/27543204/c0ea04fb-2b8e-442b-9cf7-cb556ff5cda9" alt="事务A、B、C执行流程(1)" style="max-width: 100%;"></a></p>
+<p>说明一下：</p>
+<ul>
+<li>transaction with consistent snapshot 这个命令代表马上开启一个事务</li>
+<li>事务 C 没有显式地使用 begin/commit，表示这个 update 语句本身就是一个事务，语句完成的时候会自动提交；</li>
+<li>事务 B 在更新了行之后查询 ;</li>
+<li>事务 A 在一个只读事务中查询，并且时间顺序上是在事务 B 的查询之后。</li>
+</ul>
+<p>大家可以猜一下，每个事务看见的，k值，</p>
+<p><code class="notranslate">经过测试：事务 B 查到的 k 的值是 3，而事务 A 查到的 k 的值是 1</code></p>
+<p>大家是否会感到疑惑？</p>
+<p>下面进一步跟大家一起解开这个疑惑。</p>
+<h2>两个"视图"的概念</h2>
+<p>首先我们来明确，在MySQL中的两个“视图”概念</p>
+<ul>
+<li>一个是 view。它是一个用查询语句定义的虚拟表，在调用的时候执行查询语句并生成结果。创建视图的语法是 create view … ，而它的查询方法与表一样。</li>
+<li>另一个是 InnoDB 在实现 MVCC 时用到的一致性读视图，即 consistent read view，用于支持 RC（Read Committed，读提交）和 RR（Repeatable Read，可重复读）隔离级别的实现。</li>
+</ul>
+<p>在前面简单的提到过 read-view的概念 - 事务开启时，会生成一个read-view，每个事务的read-view都是相互独立的。</p>
+<p>接下来，将会吧read-view进一步拆开来，跟深入理解MVCC。</p>
+<h2>“快照-read_view”在MVCC中工作原理</h2>
+<p>在可重复隔离级别-RR下，事务在开启的时候就对整个库“拍了个快照”，对应创建了一个read-view。</p>
+<p>这里，我们来看看，这个“快照-read_view”，是如何实现的。</p>
+<p>InnoDB 里面每个事务有一个唯一的事务 ID，叫作 transaction id。它是在事务开始的时候向 InnoDB 的事务系统申请的，是按申请顺序严格递增的。</p>
+<p>而每行数据也都是有多个版本的。每次事务更新数据的时候，都会生成一个新的数据版本，并且把 transaction id 赋值给这个数据版本的事务 ID，记为 row trx_id。同时，旧的数据版本要保留，并且在新的数据版本中，能够有信息可以直接拿到它。</p>
+<p>也就是说，数据表中的一行记录，其实可能有多个版本 (row)，每个版本有自己的 row trx_id。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/niaidaye/niaidaye.github.io/assets/27543204/a9658f69-52a2-4f58-81ac-585d1303ce0b"><img src="https://github.com/niaidaye/niaidaye.github.io/assets/27543204/a9658f69-52a2-4f58-81ac-585d1303ce0b" alt="行状态变更图" style="max-width: 100%;"></a></p>
+<p>图中虚线框里是同一行数据的 4 个版本，当前最新版本是 V4，k 的值是 22，它是被 transaction id 为 25 的事务更新的，因此它的 row trx_id 也是 25。</p>
+<p>在MySQL的InnoDB引擎，语句更新会生成对应的undo log（回滚日志），这里的undo log就对应图中的U1、U2、U3。</p>
+<p>而V1、V2、V3比不在物理上真实存储，而是每次需要的时候，根据当前版本和undo log计算出来的。比如，需要V2的时候，就通过V4依次执行U3、U2计算出来。</p>
+<p>这样的设计就避免数据在数据库中被存储多份，造成存储空间浪费。</p>
+<h2>视图数组</h2>
+<p>接下来就来看看，在可重复读（RR）隔离级别下，开启一个事务后，是如何保证其他事务的更新对它不可见。</p>
+<p>先用通俗的描述一下：</p>
+<p>一个事务只需要在启动的时候声明说，“以我启动的时刻为准，如果一个数据版本是在我启动之前生成的，就认；如果是我启动以后才生成的，我就不认，我必须要找到它的上一个版本”。</p>
+<p>当然，如果“上一个版本”也不可见，那就得继续往前找。还有，如果是这个事务自己更新的数据，它自己还是要认的。</p>
+<p>在具体的实现上，InnoDB为每个事务构造了一个数组（视图数组），用来保存这个事务启动瞬间，当前正在“活跃”的所有事务ID。“活跃”是指启动了，但是还没提交。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/niaidaye/niaidaye.github.io/assets/27543204/030d4b09-5a6b-4ca6-8e6d-a4f711e4057a"><img src="https://github.com/niaidaye/niaidaye.github.io/assets/27543204/030d4b09-5a6b-4ca6-8e6d-a4f711e4057a" alt="数据版本可见性规则" style="max-width: 100%;"></a></p>
+<p>先说明一下上图的数据版本可见性规则：</p>
+<p>在数组里面事务 ID 的最小值记为低水位，当前系统里面已经创建过的事务 ID 的最大值加 1 记为高水位。</p>
+<p>这个视图数组和高水位，就组成了当前事务的一致性视图（read-view）。</p>
+<p>而数据版本的可见性规则，就是基于数据的 row trx_id 和这个一致性视图的对比结果得到的。</p>
+<p>这个视图数组把所有的 row trx_id 分成了几种不同的情况。这样对于当前事务启动瞬间，一个数据版本的 row trx_id，就有以下几种情况：</p>
+<ol>
+<li>如果落在蓝色部分，表示这个版本是已提交的事务或者是当前事务自己生成的，这个数据是可见的；</li>
+<li>如果落在红色部分，表示这个版本是由将来启动的事务生成的，是肯定不可见的；</li>
+<li>如果落在黄色部分，那就包括两种情况
+<ul>
+<li>若 row trx_id 在数组中，表示这个版本是由还没提交的事务生成的，不可见；</li>
+<li>若 row trx_id 不在数组中，表示这个版本是已经提交了的事务生成的，可见。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>这就是InnoDB事务的多版本并发控制（MVCC），下篇将会带大家，继续实践图事务A、B、C的执行流程，继续分析，为什么事务C没有提交，但是事务 B 查到的 k 的值是 3；</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer">Copyright © <span id="year"></span><a href="https://niaidaye.github.io"> 独钓寒江雪的博客 </a>
+<p>
+<span id="runday"></span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a>
+</p>
+
+<script>
+if(""!=""){
+    var now=new Date();
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("year").innerHTML=now.getFullYear();
+    if(""!=""){document.getElementById("runday").innerHTML=" • "+"网站运行"+diffDay+"天"+" • ";}
+    else{document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";}
+}
+</script>
+</div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n\n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","niaidaye/niaidaye.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+</script>
+
+
+</html>
