@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/27543204?v=4"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="## 前言
+
+---
+
+带着问题来学习算法：
+
+*插入排序和冒泡排序的时间复杂度相同，都是 O(n2)，在实际的软件开发里，为什么我们更倾向于使用插入排序算法而不是冒泡排序算法呢？*
+
+### 如何分析一个“排序算法”？
+
+- **排序算法的执行效率**
+  1. 最好、最坏、平均情况时间复杂度
+  2. 时间复杂度的系数、常数、低阶
+  3. 比较次数和交换（或移动）次数
+- **排序算法的内存消耗**
+  - 原地排序（Sorted in place）：特指空间复杂度为O(1)的排序算法
+- **排序算法的稳定性**
+  - 稳定性：待排序的序列中存在值相等的元素，经过排序之后，相等元素之间原来的先后顺序不变
+  - 稳定排序算法：稳定性不变
+  - 不稳定排序算法：稳定性发生改变
+
+这里为什么要分析排序算法的稳定性，平时学习算法中，一般用数字来排序，两个3，大小不一样吗？在前，在后又有什么关系嘞？我这里举个， 实际开发中的例子，大家一看就能明白啦。">
+<meta property="og:title" content="常用排序（上）">
+<meta property="og:description" content="## 前言
+
+---
+
+带着问题来学习算法：
+
+*插入排序和冒泡排序的时间复杂度相同，都是 O(n2)，在实际的软件开发里，为什么我们更倾向于使用插入排序算法而不是冒泡排序算法呢？*
+
+### 如何分析一个“排序算法”？
+
+- **排序算法的执行效率**
+  1. 最好、最坏、平均情况时间复杂度
+  2. 时间复杂度的系数、常数、低阶
+  3. 比较次数和交换（或移动）次数
+- **排序算法的内存消耗**
+  - 原地排序（Sorted in place）：特指空间复杂度为O(1)的排序算法
+- **排序算法的稳定性**
+  - 稳定性：待排序的序列中存在值相等的元素，经过排序之后，相等元素之间原来的先后顺序不变
+  - 稳定排序算法：稳定性不变
+  - 不稳定排序算法：稳定性发生改变
+
+这里为什么要分析排序算法的稳定性，平时学习算法中，一般用数字来排序，两个3，大小不一样吗？在前，在后又有什么关系嘞？我这里举个， 实际开发中的例子，大家一看就能明白啦。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://niaidaye.github.io/post/chang-yong-pai-xu-%EF%BC%88-shang-%EF%BC%89.html">
+<meta property="og:image" content="https://avatars.githubusercontent.com/u/27543204?v=4">
+<title>常用排序（上）</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">常用排序（上）</h1>
+<div class="title-right">
+    <a href="https://niaidaye.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/niaidaye/niaidaye.github.io/issues/5" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h2>前言</h2>
+<hr>
+<p>带着问题来学习算法：</p>
+<p><em>插入排序和冒泡排序的时间复杂度相同，都是 O(n2)，在实际的软件开发里，为什么我们更倾向于使用插入排序算法而不是冒泡排序算法呢？</em></p>
+<h3>如何分析一个“排序算法”？</h3>
+<ul>
+<li><strong>排序算法的执行效率</strong>
+<ol>
+<li>最好、最坏、平均情况时间复杂度</li>
+<li>时间复杂度的系数、常数、低阶</li>
+<li>比较次数和交换（或移动）次数</li>
+</ol>
+</li>
+<li><strong>排序算法的内存消耗</strong>
+<ul>
+<li>原地排序（Sorted in place）：特指空间复杂度为O(1)的排序算法</li>
+</ul>
+</li>
+<li><strong>排序算法的稳定性</strong>
+<ul>
+<li>稳定性：待排序的序列中存在值相等的元素，经过排序之后，相等元素之间原来的先后顺序不变</li>
+<li>稳定排序算法：稳定性不变</li>
+<li>不稳定排序算法：稳定性发生改变</li>
+</ul>
+</li>
+</ul>
+<p>这里为什么要分析排序算法的稳定性，平时学习算法中，一般用数字来排序，两个3，大小不一样吗？在前，在后又有什么关系嘞？我这里举个， 实际开发中的例子，大家一看就能明白啦。</p>
+<p>比如说，我们现在要给电商交易系统中的“订单”排序。订单有两个属性，一个是下单时间，另一个是订单金额。如果我们现在有 10 万条订单数据，我们希望按照金额从小到大对订单数据排序。对于金额相同的订单，我们希望按照下单时间从早到晚有序。对于这样一个，排序需求来说，一般我们会这样做：</p>
+<p>我们先按照金额对订单数据进行排序，然后，再遍历排序之后的订单数据，对于每个金额相同的小区间再按照下单时间排序。这种排序思路理解起来不难，但是实现起来会很复杂。</p>
+<p>借助一下稳定性算法，这个问题可以非常简洁高效地解决。</p>
+<p>解决思路：</p>
+<p>我们先按照订单时间进行排序，接着按照金额用一个稳定排序算法，经过两次排序算法后，就能得到需求。大家可以思考一下，为啥？</p>
+<h2>冒泡（bubbleSort）</h2>
+<hr>
+<p>冒泡排序，只会操作相邻的两个数据。每次冒泡操作都会对相邻两个元素进行比价，看是否满足大小关系。如果不满足就让它们互相交换</p>
+<div class="highlight highlight-source-java"><pre class="notranslate">   <span class="pl-c">// 冒泡排序</span>
+    <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">bubbleSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
+        <span class="pl-k">if</span> (<span class="pl-s1">arr</span> == <span class="pl-c1">null</span> || <span class="pl-s1">arr</span>.<span class="pl-s1">length</span> &lt; <span class="pl-c1">2</span>)
+            <span class="pl-k">return</span>; <span class="pl-c">// 数组为空或长度小于2时，无需排序</span>
+
+        <span class="pl-c">// 从前往后，每次把最大的数放到最后</span>
+        <span class="pl-k">for</span> (<span class="pl-smi">int</span> <span class="pl-s1">end</span> = <span class="pl-s1">arr</span>.<span class="pl-s1">length</span> - <span class="pl-c1">1</span>; <span class="pl-s1">end</span> &gt; <span class="pl-c1">0</span>; <span class="pl-s1">end</span>--) {
+            <span class="pl-smi">boolean</span> <span class="pl-s1">flag</span> = <span class="pl-c1">false</span>; <span class="pl-c">// 提前退出的标志</span>
+
+            <span class="pl-c">// 从前往后，每次比较相邻的两个数，把大的数放到后面</span>
+            <span class="pl-k">for</span> (<span class="pl-smi">int</span> <span class="pl-s1">i</span> = <span class="pl-c1">0</span>; <span class="pl-s1">i</span> &lt; <span class="pl-s1">end</span>; <span class="pl-s1">i</span>++) {
+                <span class="pl-k">if</span> (<span class="pl-s1">arr</span>[<span class="pl-s1">i</span>] &gt; <span class="pl-s1">arr</span>[<span class="pl-s1">i</span> + <span class="pl-c1">1</span>]) { <span class="pl-c">// 保证算法的稳定性</span>
+                    <span class="pl-en">swap</span>(<span class="pl-s1">arr</span>, <span class="pl-s1">i</span>, <span class="pl-s1">i</span> + <span class="pl-c1">1</span>); <span class="pl-c">// 交换</span>
+                    <span class="pl-s1">flag</span> = <span class="pl-c1">true</span>; <span class="pl-c">// 有交换，说明还没有排好序</span>
+                }
+            }
+            <span class="pl-k">if</span> (!<span class="pl-s1">flag</span>)
+                <span class="pl-k">break</span>; <span class="pl-c">// 没有交换，说明已经排好序，提前退出</span>
+        }
+    }
+
+<span class="pl-c">// 交换</span>
+<span class="pl-smi">privat</span> <span class="pl-s1">static</span> <span class="pl-smi">void</span> <span class="pl-s1">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>){
+  <span class="pl-smi">int</span> <span class="pl-s1">temp</span> = <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>];
+  <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>] = <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>];
+  <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>] = <span class="pl-s1">temp</span>;
+}</pre></div>
+<h3>分析</h3>
+<ul>
+<li>冒泡排序是原地排序算法吗？</li>
+</ul>
+<blockquote>
+<p>冒泡排序是原地算法；冒泡的过程只涉及相邻数据的交换操作，只需要常量级别的临时空间，所以它的空间复杂度是O(1)</p>
+</blockquote>
+<ul>
+<li>冒泡排序是稳定的排序算法吗？</li>
+</ul>
+<blockquote>
+<p>在冒泡排序中，只有交换才可以改变两个元素前后的顺序，可以为了保证冒泡排序算法的稳定性，在两个元素相等时候，不做交换</p>
+</blockquote>
+<ul>
+<li>冒泡排序的时间复杂度是多少？</li>
+</ul>
+<blockquote>
+<p>最好情况下，要排序的数据已经是有序的了，我们只需要进行一次冒泡操作，就可以结束了，所以最好情况时间复杂度是 O(n)。而最坏的情况是，要排序的数据刚好是倒序排列的，我们需要进行 n 次冒泡操作，所以最坏情况时间复杂度为 O(n2)。</p>
+</blockquote>
+<p>​	这里的时间复杂度，还可以通过“<strong>有序度</strong>”和“<strong>逆序度</strong>”来分析</p>
+<h4>有序度</h4>
+<p>数组中具有有序关系的元素对的个数。有序元素对用数学表达式表示就是这样：</p>
+$$有序元素对：a[i] &lt;= a[j]，如果 i &lt; j;$$
+<p>对于完全有序的数组有序度计算公式：（<strong>满有序度</strong>）</p>
+$$n * (n - 1) / 2; n是数组元素个数;$$
+<h4>逆序度</h4>
+<p>计算公式：<code class="notranslate">逆序度 = 满有序度 - 有序度</code></p>
+<h2>插入（Insertion Sort）</h2>
+<p>排序思想：</p>
+<p>在一个有序的数组里添加一个元素，遍历有序数组，让元素插入到对应的位置，保证有序数组有序。——动态排序的过程；</p>
+<p>插入排序的实现：将数组数据，分为两个区间，<strong>已排序区间</strong>、<strong>未排序区间</strong>。</p>
+<p>首先初始已排序区间只有一个元素，就是数组的第一个元素。插入算法的核心思想是取未排序区间中的元素，在已排序区间中找到合适的插入位置将其插入，并保证已排序区间数据一直有序。重复这个过程，直到未排序区间中元素为空，算法结束。</p>
+<p>插入排序包含两种操作，一种<strong>元素的比较</strong>，一种<strong>元素的移动</strong>。</p>
+<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-c">// 插入排序</span>
+<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">insertionSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
+    <span class="pl-k">if</span> (<span class="pl-s1">arr</span> == <span class="pl-c1">null</span> || <span class="pl-s1">arr</span>.<span class="pl-s1">length</span> &lt; <span class="pl-c1">2</span>)
+        <span class="pl-k">return</span>; <span class="pl-c">// 数组为空或长度小于2时，无需排序</span>
+
+    <span class="pl-c">// 从前往后，每次把第i个数插入到前面已经排好序的数组中</span>
+    <span class="pl-k">for</span> (<span class="pl-smi">int</span> <span class="pl-s1">i</span> = <span class="pl-c1">1</span>; <span class="pl-s1">i</span> &lt; <span class="pl-s1">arr</span>.<span class="pl-s1">length</span>; <span class="pl-s1">i</span>++) {
+        <span class="pl-smi">int</span> <span class="pl-s1">value</span> = <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>]; <span class="pl-c">// 要插入的数</span>
+        <span class="pl-smi">int</span> <span class="pl-s1">j</span> = <span class="pl-s1">i</span> - <span class="pl-c1">1</span>; <span class="pl-c">// 已经排好序的数组的最后一个数的下标</span>
+
+        <span class="pl-smi">boolean</span> <span class="pl-s1">flag</span> = <span class="pl-c1">true</span>; <span class="pl-c">// 提前退出的标志</span>
+
+        <span class="pl-c">// 查找插入的位置</span>
+        <span class="pl-k">while</span> (<span class="pl-s1">j</span> &gt;= <span class="pl-c1">0</span> &amp;&amp; <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>] &gt; <span class="pl-s1">value</span>) {
+            <span class="pl-s1">flag</span> = <span class="pl-c1">false</span>;
+            <span class="pl-s1">arr</span>[<span class="pl-s1">j</span> + <span class="pl-c1">1</span>] = <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>]; <span class="pl-c">// 移动数据</span>
+            <span class="pl-s1">j</span>--; <span class="pl-c">// 向前移动</span>
+        }
+        <span class="pl-k">if</span>(<span class="pl-s1">flag</span>) <span class="pl-k">break</span>; <span class="pl-c">// 没有移动数据，说明已经排好序，提前退出</span>
+        <span class="pl-c">// 插入数据</span>
+        <span class="pl-s1">arr</span>[<span class="pl-s1">j</span> + <span class="pl-c1">1</span>] = <span class="pl-s1">value</span>;
+    }
+}</pre></div>
+<h3>分析</h3>
+<ul>
+<li>插入排序是原地排序算法吗？</li>
+</ul>
+<blockquote>
+<p>插入排序是原地算法；插入排序算法的运行并不需要额外的存储空间，所以空间复杂度是 O(1)，也就是说，这是一个原地排序算法。</p>
+</blockquote>
+<ul>
+<li>插入排序是稳定的排序算法吗？</li>
+</ul>
+<blockquote>
+<p>在插入排序中，对于值相同的元素，我们可以选择将后面出现的元素，插入到前面出现元素的后面，这样就可以保持原有的前后顺序不变，所以插入排序是稳定的排序算法。<code class="notranslate"> arr[j + 1] = value;</code></p>
+</blockquote>
+<ul>
+<li>插入排序的时间复杂度是多少？</li>
+</ul>
+<blockquote>
+<p>如果要排序的数据已经是有序的，我们并不需要搬移任何数据。如果我们从尾到头在有序数据组里面查找插入位置，每次只需要比较一个数据就能确定插入的位置。所以这种情况下，最好是时间复杂度为 O(n)。注意，这里是从尾到头遍历已经有序的数据。</p>
+<p>如果数组是倒序的，每次插入都相当于在数组的第一个位置插入新的数据，所以需要移动大量的数据，所以最坏情况时间复杂度为 O(n2)。</p>
+<p>对于插入排序来说，每次插入操作都相当于在数组中插入一个数据，循环执行 n 次插入操作，所以平均时间复杂度为 O(n2)。</p>
+</blockquote>
+<h2>选择（Selection Sort）</h2>
+<p>排序思想：与插入排序类似，将分为<strong>已排序区间</strong>和<strong>未排序区间</strong>，每次从未排序区间找到最小元素，将其放入到已排序区间的末尾。</p>
+<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-c">// 选择排序</span>
+<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">selectionSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
+    <span class="pl-k">if</span> (<span class="pl-s1">arr</span> == <span class="pl-c1">null</span> || <span class="pl-s1">arr</span>.<span class="pl-s1">length</span> &lt; <span class="pl-c1">2</span>)
+        <span class="pl-k">return</span>; <span class="pl-c">// 数组为空或长度小于2时，无需排序</span>
+
+    <span class="pl-smi">boolean</span> <span class="pl-s1">flag</span> = <span class="pl-c1">true</span>; <span class="pl-c">// 提前退出的标志</span>
+
+    <span class="pl-c">// 从前往后，每次把最小的数放到前面</span>
+    <span class="pl-k">for</span> (<span class="pl-smi">int</span> <span class="pl-s1">i</span> = <span class="pl-c1">0</span>; <span class="pl-s1">i</span> &lt; <span class="pl-s1">arr</span>.<span class="pl-s1">length</span> - <span class="pl-c1">1</span>; <span class="pl-s1">i</span>++) {
+        <span class="pl-smi">int</span> <span class="pl-s1">minIndex</span> = <span class="pl-s1">i</span>; <span class="pl-c">// 最小数的下标</span>
+
+        <span class="pl-c">// 从i+1开始，找到最小的数的下标</span>
+        <span class="pl-k">for</span> (<span class="pl-smi">int</span> <span class="pl-s1">j</span> = <span class="pl-s1">i</span> + <span class="pl-c1">1</span>; <span class="pl-s1">j</span> &lt; <span class="pl-s1">arr</span>.<span class="pl-s1">length</span>; <span class="pl-s1">j</span>++) {
+            <span class="pl-k">if</span> (<span class="pl-s1">arr</span>[<span class="pl-s1">j</span>] &lt; <span class="pl-s1">arr</span>[<span class="pl-s1">minIndex</span>]) {
+                <span class="pl-s1">minIndex</span> = <span class="pl-s1">j</span>; <span class="pl-c">// 更新最小数的下标</span>
+                <span class="pl-s1">flag</span> = <span class="pl-c1">false</span>; <span class="pl-c">// 有交换，说明还没有排好序</span>
+            }
+        }
+        <span class="pl-k">if</span> (<span class="pl-s1">flag</span>) <span class="pl-c">// 没有交换，说明已经排好序，提前退出</span>
+            <span class="pl-k">break</span>;
+        <span class="pl-c">// 将找到的最小数与当前位置交换</span>
+        <span class="pl-k">if</span> (<span class="pl-s1">minIndex</span> != <span class="pl-s1">i</span>) {
+            <span class="pl-en">swap</span>(<span class="pl-s1">arr</span>, <span class="pl-s1">i</span>, <span class="pl-s1">minIndex</span>);
+        }
+
+    }
+}
+
+<span class="pl-c">// 交换数组中两个元素的位置</span>
+<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>) {
+    <span class="pl-smi">int</span> <span class="pl-s1">temp</span> = <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>];
+    <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>] = <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>];
+    <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>] = <span class="pl-s1">temp</span>;
+}</pre></div>
+<h3>分析</h3>
+<ul>
+<li>选择排序是原地排序算法吗？</li>
+</ul>
+<blockquote>
+<p>选择排序空间复杂度为 O(1)，是一种原地排序算法。</p>
+</blockquote>
+<ul>
+<li>选择排序是稳定的排序算法吗？</li>
+</ul>
+<blockquote>
+<p>选择排序是一种不稳定的排序算法，因为选择排序每次都要找剩余未排序元素中的最小值，和前面元素交换，这样就破坏了，稳定性</p>
+</blockquote>
+<ul>
+<li>选择排序的时间复杂度是多少？</li>
+</ul>
+<blockquote>
+<p>选择排序的最好情况时间复杂度、最坏情况和平均情况时间复杂度都为 O(n2)</p>
+</blockquote>
+<h2>开篇答疑</h2>
+<blockquote>
+<p>插入排序和冒泡排序的时间复杂度相同，都是 O(n2)，在实际的软件开发里，为什么我们更倾向于使用插入排序算法而不是冒泡排序算法呢？</p>
+</blockquote>
+<p>冒泡、选择排序都涉及到，数据的交换</p>
+<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-c">// 交换数组中两个元素的位置</span>
+<span class="pl-k">private</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>) {
+    <span class="pl-smi">int</span> <span class="pl-s1">temp</span> = <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>];
+    <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>] = <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>];
+    <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>] = <span class="pl-s1">temp</span>;
+}</pre></div>
+<p>而插入排序只涉及到，数据的移动</p>
+<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-s1">arr</span>[<span class="pl-s1">j</span> + <span class="pl-c1">1</span>] = <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>]; <span class="pl-c">// 移动数据</span></pre></div>
+<p>当数据量大时候，冒泡、选择都要在，CPU中执行三次操作，而插入排序，就只需要在CPU中执行一次操作，这样速度就比较快啦；</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer">Copyright © <span id="year"></span><a href="https://niaidaye.github.io"> 独钓寒江雪的博客 </a>
+<p>
+<span id="runday"></span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a>
+</p>
+
+<script>
+if(""!=""){
+    var now=new Date();
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("year").innerHTML=now.getFullYear();
+    if(""!=""){document.getElementById("runday").innerHTML=" • "+"网站运行"+diffDay+"天"+" • ";}
+    else{document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";}
+}
+</script>
+</div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n\n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","niaidaye/niaidaye.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+</script>
+<script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</html>

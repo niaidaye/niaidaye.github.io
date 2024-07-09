@@ -1,5 +1,26 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>独钓寒江雪的博客</title><link>https://niaidaye.github.io</link><description>我是AX，分享输出学习过中的一点点心得，愿与君共勉。您的点赞👍，收藏⭐️，是我创作路上的绊脚石，🤣</description><copyright>独钓寒江雪的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/27543204?v=4</url><title>avatar</title><link>https://niaidaye.github.io</link></image><lastBuildDate>Fri, 05 Jul 2024 07:45:21 +0000</lastBuildDate><managingEditor>独钓寒江雪的博客</managingEditor><ttl>60</ttl><webMaster>独钓寒江雪的博客</webMaster><item><title>MySQL（InnoDB）事务的多版本并发控制（二）</title><link>https://niaidaye.github.io/post/MySQL%EF%BC%88InnoDB%EF%BC%89-shi-wu-de-duo-ban-ben-bing-fa-kong-zhi-%EF%BC%88-er-%EF%BC%89.html</link><description>对于上次提到的事务 A、B、C 的执行流程，这里我在放上这张图&#13;
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>独钓寒江雪的博客</title><link>https://niaidaye.github.io</link><description>我是AX，分享输出学习过中的一点点心得，愿与君共勉。您的点赞👍，收藏⭐️，是我创作路上的绊脚石，🤣</description><copyright>独钓寒江雪的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/27543204?v=4</url><title>avatar</title><link>https://niaidaye.github.io</link></image><lastBuildDate>Tue, 09 Jul 2024 09:31:11 +0000</lastBuildDate><managingEditor>独钓寒江雪的博客</managingEditor><ttl>60</ttl><webMaster>独钓寒江雪的博客</webMaster><item><title>常用排序（上）</title><link>https://niaidaye.github.io/post/chang-yong-pai-xu-%EF%BC%88-shang-%EF%BC%89.html</link><description>## 前言&#13;
+&#13;
+---&#13;
+&#13;
+带着问题来学习算法：&#13;
+&#13;
+*插入排序和冒泡排序的时间复杂度相同，都是 O(n2)，在实际的软件开发里，为什么我们更倾向于使用插入排序算法而不是冒泡排序算法呢？*&#13;
+&#13;
+### 如何分析一个“排序算法”？&#13;
+&#13;
+- **排序算法的执行效率**&#13;
+  1. 最好、最坏、平均情况时间复杂度&#13;
+  2. 时间复杂度的系数、常数、低阶&#13;
+  3. 比较次数和交换（或移动）次数&#13;
+- **排序算法的内存消耗**&#13;
+  - 原地排序（Sorted in place）：特指空间复杂度为O(1)的排序算法&#13;
+- **排序算法的稳定性**&#13;
+  - 稳定性：待排序的序列中存在值相等的元素，经过排序之后，相等元素之间原来的先后顺序不变&#13;
+  - 稳定排序算法：稳定性不变&#13;
+  - 不稳定排序算法：稳定性发生改变&#13;
+&#13;
+这里为什么要分析排序算法的稳定性，平时学习算法中，一般用数字来排序，两个3，大小不一样吗？在前，在后又有什么关系嘞？我这里举个， 实际开发中的例子，大家一看就能明白啦。</description><guid isPermaLink="true">https://niaidaye.github.io/post/chang-yong-pai-xu-%EF%BC%88-shang-%EF%BC%89.html</guid><pubDate>Tue, 09 Jul 2024 09:30:45 +0000</pubDate></item><item><title>MySQL（InnoDB）事务的多版本并发控制（二）</title><link>https://niaidaye.github.io/post/MySQL%EF%BC%88InnoDB%EF%BC%89-shi-wu-de-duo-ban-ben-bing-fa-kong-zhi-%EF%BC%88-er-%EF%BC%89.html</link><description>对于上次提到的事务 A、B、C 的执行流程，这里我在放上这张图&#13;
 &#13;
 ![事务A、B、C执行流程(1)](https://github.com/niaidaye/niaidaye.github.io/assets/27543204/5df7814d-c482-403d-bdfa-4a9d1cba08bc)&#13;
 &#13;
