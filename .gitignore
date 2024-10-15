@@ -1,7 +1,17 @@
 .DS_Store
-.idea/
-.gradle/
-build/
+# vscode
 .vscode/
-.venv/
+
+# idea
+.idea/
+
+# logs
+logs/
+
+# node_modules
+node_modules/
+
+article/*
+
+# git
 .git/
