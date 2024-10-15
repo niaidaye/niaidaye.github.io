@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/27543204?v=4"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# Spring 基础知识
+
+## 1. Spring和Spring框架
+
+Spring是一个开源的Java开发框架，由Pivotal团队开发，是目前最流行的Java开发框架之一。">
+<meta property="og:title" content="Spring 基础知识">
+<meta property="og:description" content="# Spring 基础知识
+
+## 1. Spring和Spring框架
+
+Spring是一个开源的Java开发框架，由Pivotal团队开发，是目前最流行的Java开发框架之一。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://niaidaye.github.io/post/Spring%20-ji-chu-zhi-shi.html">
+<meta property="og:image" content="https://avatars.githubusercontent.com/u/27543204?v=4">
+<title>Spring 基础知识</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">Spring 基础知识</h1>
+<div class="title-right">
+    <a href="https://niaidaye.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/niaidaye/niaidaye.github.io/issues/8" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>Spring 基础知识</h1>
+<h2>1. Spring和Spring框架</h2>
+<p>Spring是一个开源的Java开发框架，由Pivotal团队开发，是目前最流行的Java开发框架之一。Spring框架是一个轻量级的控制反转（IoC）和面向切面（AOP）的容器框架。Spring框架的核心是Spring Core，它提供IoC和DI功能，并支持AOP。Spring框架还提供了众多的模块，如Spring MVC、Spring WebFlux、Spring Data、Spring Security、Spring Batch等，这些模块可以帮助开发者快速构建基于Spring的应用。</p>
+<h2>2. Spring核心：控制反转（IoC）和依赖注入（DI）</h2>
+<ol>
+<li>
+<p>控制反转（Inversion of Control，IoC）是一种设计原则，可以用来降低计算机代码之间的耦合度。其中最著名的实现方式就是依赖注入（Dependency Injection，DI）。</p>
+</li>
+<li>
+<p>依赖注入（DI）是指当一个对象需要其他对象协助才能运行时，通过外部容器（如Spring容器）来提供这些依赖对象。</p>
+</li>
+<li>
+<p>Spring IoC容器负责实例化、配置和管理应用中的对象。Spring IoC容器通过依赖注入（DI）来实现对象之间的解耦。</p>
+</li>
+<li>
+<p>Spring IoC容器通过读取配置元数据（如XML、Java注解等）来实例化、配置和管理对象。</p>
+</li>
+</ol>
+<h2>3. Spring的AOP（面向切面编程）</h2>
+<ul>
+<li>
+<p>OOP（面向对象编程）：是一种编程范式，通过类和对象来组织代码，以提高代码的重用性、灵活性和可维护性。</p>
+</li>
+<li>
+<p>AOP（面向切面编程）：是一种编程范式，通过预编译方式和运行期动态代理，在不修改源代码的情况下给程序增加功能。</p>
+</li>
+</ul>
+<p>Spring AOP是以AspectJ为基础的面向切面编程（AOP）框架。AspectJ是一个开源的Java AOP框架，它提供了强大的切面功能，如事务管理、日志管理、性能监控等。</p>
+<p>Spring AOP通过在运行期间动态地将切面织入到目标对象（如方法）中，从而实现对业务逻辑的干预。Spring AOP可以帮助开发者将横切关注点从业务逻辑中分离出来，使得代码更加清晰、易于维护。</p>
+<h2>4. Spring的生命周期、循环依赖和作用域</h2>
+<p>Spring的生命周期包括：实例化、依赖注入、初始化、调用、销毁。Spring的生命周期可以帮助开发者了解Spring IoC容器的工作原理。</p>
+<p>Spring的循环依赖是指两个或两个以上的Bean之间存在循环依赖，导致Bean无法正常工作。</p>
+<p>Spring的作用域包括singleton、prototype、request、session、global session、websocket等。</p>
+<h3>4.1. Spring的生命周期</h3>
+<ol>
+<li>
+<p>实例化：</p>
+<ul>
+<li>描述：这是Spring IoC容器管理Bean（对象）生命周期的第一步。容器根据配置元数据创建Bean的实例。</li>
+<li>方法：
+<ul>
+<li>
+<p>XML配置元数据：通过配置文件（XML形式）定义Bean的创建信息，IoC容器会读取这些信息并实例化对象。</p>
+</li>
+<li>
+<p>Java注解配置元数据：开发者可以使用注解（如<a class="user-mention notranslate" data-hovercard-type="organization" data-hovercard-url="/orgs/component/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/component">@component</a>）在Java类上直接标注，IoC容器会扫描这些注解并实例化类。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>依赖注入：</p>
+<ul>
+<li>描述：依赖注入是Spring IoC的核心特性，允许对象之间的依赖关系通过外部容器自动管理，降低了代码之间的耦合。</li>
+<li>方法：
+<ul>
+<li>
+<p>构造器注入：通过构造器注入，Spring IoC容器会自动调用构造器，并将依赖对象注入到Bean中。</p>
+</li>
+<li>
+<p>Setter注入：通过setter注入，Spring IoC容器会自动调用Bean的setter方法，并将依赖对象注入到Bean中。</p>
+</li>
+<li>
+<p>接口注入：通过接口注入，Spring IoC容器会自动调用Bean的接口方法，并将依赖对象注入到Bean中。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>初始化：</p>
+<ul>
+<li>描述：一旦Bean实例化并注入了依赖，IoC容器将调用初始化方法以设置Bean的初始状态。</li>
+<li>方法：
+<ul>
+<li>
+<p>init-method：在Bean的配置文件中，可以设置初始化方法的名称，IoC容器在实例化Bean之后，会自动调用该方法。</p>
+</li>
+<li>
+<p><a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/PostConstruct/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/PostConstruct">@PostConstruct</a>注解：在Bean类中，可以添加<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/PostConstruct/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/PostConstruct">@PostConstruct</a>注解，该注解会在Bean初始化之后自动调用。</p>
+</li>
+<li>
+<p>实现InitializingBean接口：在Bean类中，可以实现InitializingBean接口，并在Bean初始化时调用afterPropertiesSet方法。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>调用：</p>
+<ul>
+<li>描述：IoC容器创建Bean之后，Bean就可以被调用。</li>
+<li>方法：调用Bean的任意方法，Spring IoC容器会自动将依赖对象注入到该方法的参数中。</li>
+</ul>
+</li>
+<li>
+<p>销毁：</p>
+<ul>
+<li>描述：IoC容器销毁Bean之前，会调用销毁方法以释放资源。</li>
+<li>方法：
+<ul>
+<li>
+<p>destroy-method：在Bean的配置文件中，可以设置销毁方法的名称，IoC容器在销毁Bean之前，会自动调用该方法。</p>
+</li>
+<li>
+<p>@PreDestroy注解：在Bean类中，可以添加@PreDestroy注解，该注解会在Bean销毁之前自动调用。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3>4.2. Spring的循环依赖</h3>
+<p>Spring的循环依赖是指两个或两个以上的Bean之间存在循环依赖，导致Bean无法正常工作。Spring IoC容器通过控制反转（IoC）和依赖注入（DI）来解决循环依赖问题。</p>
+<p>（注：Spring只是解决了单例模式下属性依赖的循环问题；Spring为了解决单例的循环依赖问题，使用了三级缓存。）</p>
+<ul>
+<li>
+<p>第一层缓存（singletonObjects）：单例对象缓存池，已经实例化并且属性赋值，这里的对象是成熟对象；</p>
+</li>
+<li>
+<p>第二层缓存（earlySingletonObjects）：早期单例对象缓存池，已经实例化但是属性未赋值，这里的对象是半成熟对象；</p>
+</li>
+<li>
+<p>第三层缓存（singletonFactories）：单例工厂缓存池，用于创建Bean的工厂对象，这里的对象是半成熟对象；</p>
+</li>
+</ul>
+<p>Spring IoC容器在实例化Bean时，会先检查该Bean是否在第一层缓存中，如果在，则直接返回该Bean的实例；如果不在，则会检查该Bean是否在第二层缓存中，如果在，则会调用该Bean的工厂方法创建Bean的实例，并将该Bean的实例放入第一层缓存中；如果不在，则会调用该Bean的构造器创建Bean的实例，并将该Bean的实例放入第二层缓存中。</p>
+<p>“A对象setter依赖B对象，B对象setter依赖A对象”。<br>
+A首先完成了初始化的第一步，而且将本身提早曝光singletonFactories中，此时进行初始化的第二步，发现本身依赖对象B，此时就尝试去get(B)，发现B尚未被create，因此走create流程，B在初始化第一步的时候发现本身依赖了对象A，因而尝试get(A)，尝试一级缓存singletonObjects(确定没有，由于A还没初始化彻底)，尝试二级缓存earlySingletonObjects（也没有），尝试三级缓存singletonFactories，因为A经过ObjectFactory将本身提早曝光了，因此B可以经过ObjectFactory.getObject拿到A对象(半成品)，B拿到A对象后顺利完成了初始化阶段一、二、三，彻底初始化以后将本身放入到一级缓存singletonObjects中。此时返回A中，A此时能拿到B的对象顺利完成本身的初始化阶段二、三，最终A也完成了初始化，进去了一级缓存singletonObjects中，并且更加幸运的是，因为B拿到了A的对象引用，因此B如今hold住的A对象完成了初始化。</p>
+<ul>
+<li>
+<p>问：Spring为什么不能解决构造器的循环依赖？<br>
+答：构造器注入形成的循环依赖： 也就是beanB需要在beanA的构造函数中完成初始化，beanA也需要在beanB的构造函数中完成初始化，这种情况的结果就是两个bean都不能完成初始化，循环依赖难以解决。Spring解决循环依赖主要是依赖三级缓存，但是的在调用构造方法之前还未将其放入三级缓存之中，因此后续的依赖调用构造方法的时候并不能从三级缓存中获取到依赖的Bean，因此不能解决。</p>
+</li>
+<li>
+<p>问：Spring为什么不能解决prototype作用域循环依赖？<br>
+答：prototype作用域的Bean在每次获取的时候都会创建一个新的实例，因此不存在循环依赖问题。</p>
+</li>
+<li>
+<p>问：Spring为什么不能解决多例的循环依赖？<br>
+答：多实例Bean是每次调用一次getBean都会执行一次构造方法并且给属性赋值，根本没有三级缓存，因此不能解决循环依赖。</p>
+</li>
+<li>
+<p>问：那么其它循环依赖如何解决？</p>
+<ul>
+<li>
+<p>生成代理对象产生的循环依赖<br>
+这类循环依赖问题解决方法很多，主要有：</p>
+<ol>
+<li>使用<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/lazy/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/lazy">@lazy</a>注解，延迟加载</li>
+<li>使用<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/dependsOn/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/dependsOn">@dependsOn</a>注解，指定加载先后关系</li>
+<li>修改文件名称，改变循环依赖类的加载顺序</li>
+</ol>
+</li>
+<li>
+<p>使用<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/dependsOn/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/dependsOn">@dependsOn</a>产生的循环依赖<br>
+这类循环依赖问题要找到<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/dependsOn/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/dependsOn">@dependsOn</a>注解循环依赖的地方，迫使它不循环依赖就可以解决问题。</p>
+</li>
+<li>
+<p>多例循环依赖<br>
+多例Bean的循环依赖问题，可以通过将Bean的scope设置为singleton解决。</p>
+</li>
+<li>
+<p>构造器循环依赖<br>
+这类循环依赖问题可以通过使用<a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/lazy/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/lazy">@lazy</a>注解解决。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3>4.3. Spring的作用域</h3>
+<p>Spring的作用域包括singleton、prototype、request、session、global session、websocket等。</p>
+<ul>
+<li>
+<p>singleton：单例作用域，在Spring IoC容器中，只会创建一个Bean的实例，Bean的实例在整个Spring IoC容器中都共享。</p>
+</li>
+<li>
+<p>prototype：原型作用域，在Spring IoC容器中，会为每个Bean创建一个新的实例。</p>
+</li>
+<li>
+<p>request：请求作用域，在Web应用中，每个HTTP请求都会创建一个新的Bean的实例。</p>
+</li>
+<li>
+<p>session：会话作用域，在Web应用中，每个HTTP会话都会创建一个新的Bean的实例。</p>
+</li>
+</ul>
+<h2>5. Spring的事务管理</h2>
+<p>Spring事务管理是通过AOP（面向切面编程）实现的。Spring事务管理可以自动地管理事务的生命周期，包括事务的传播、事务的隔离级别、事务的传播行为、事务的回滚规则等。</p>
+<p>Spring事务管理可以帮助开发者将事务管理从业务逻辑中分离出来，使得代码更加清晰、易于维护。</p>
+<ul>
+<li>
+<p>事务的传播：Spring事务管理可以实现事务的传播，即如果一个事务方法调用另一个事务方法，则可以选择是否在同一个事务中运行。</p>
+</li>
+<li>
+<p>事务的隔离级别：Spring事务管理可以实现事务的隔离级别，即指定事务的隔离级别，如读未提交、读提交、可重复读、串行化等。</p>
+</li>
+<li>
+<p>事务的传播行为：Spring事务管理可以实现事务的传播行为，即指定事务的传播行为，如REQUIRED、SUPPORTS、MANDATORY、NEVER等。</p>
+<ul>
+<li>REQUIRED：如果存在事务，则加入该事务；如果没有事务，则创建一个新的事务。</li>
+<li>SUPPORTS：如果存在事务，则加入该事务；如果没有事务，则不支持事务。</li>
+<li>MANDATORY：如果存在事务，则加入该事务；如果没有事务，则抛出异常。</li>
+<li>NEVER：如果存在事务，则抛出异常；如果没有事务，则不支持事务。</li>
+</ul>
+<p>（注：Spring事务管理默认使用REQUIRED传播行为。）</p>
+</li>
+<li>
+<p>事务的回滚规则：Spring事务管理可以实现事务的回滚规则，即指定事务的回滚规则，如出现异常时是否回滚等。</p>
+</li>
+</ul>
+<h2>6. Spring的MVC（模型-视图-控制器）</h2>
+<p>Spring MVC是Spring框架中的一个模块，它是一个基于Java的MVC框架。Spring MVC框架可以帮助开发者快速构建基于Spring的Web应用。</p>
+<p>Spring MVC框架的主要组件包括：</p>
+<ul>
+<li>
+<p>DispatcherServlet：Spring MVC框架的核心组件，负责处理HTTP请求，并将请求分派给相应的Controller。</p>
+</li>
+<li>
+<p>HandlerMapping：Spring MVC框架的组件，负责根据用户请求找到相应的Controller。</p>
+</li>
+<li>
+<p>HandlerAdapter：Spring MVC框架的组件，负责调用相应的Controller。</p>
+</li>
+<li>
+<p>ViewResolver：Spring MVC框架的组件，负责将Controller的处理结果生成View。</p>
+</li>
+<li>
+<p>ModelAndView：Spring MVC框架的组件，用于封装Controller的处理结果。</p>
+</li>
+<li>
+<p>View：Spring MVC框架的组件，用于呈现处理结果。</p>
+</li>
+</ul>
+<p>Spring MVC框架的常用注解包括：</p>
+<ul>
+<li>
+<p><a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/RequestMapping/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/RequestMapping">@RequestMapping</a>：用于映射请求URL和Controller中的处理方法。</p>
+</li>
+<li>
+<p><a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/GetMapping/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/GetMapping">@GetMapping</a>：用于映射GET请求。</p>
+</li>
+<li>
+<p>@PostMapping：用于映射POST请求。</p>
+</li>
+<li>
+<p><a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/RequestParam/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/RequestParam">@RequestParam</a>：用于绑定请求参数到Controller中的处理方法参数。</p>
+</li>
+<li>
+<p>@PathVariable：用于绑定URL中的占位符到Controller中的处理方法参数。</p>
+</li>
+<li>
+<p><a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/responsebody/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/responsebody">@responsebody</a>：用于将Controller的处理结果以响应体的形式返回给客户端。</p>
+</li>
+<li>
+<p><a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/RestController/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/RestController">@RestController</a>：用于将Controller的处理结果以JSON或XML的形式返回给客户端。</p>
+</li>
+<li>
+<p>@ControllerAdvice：用于声明ControllerAdvice，处理全局的异常。</p>
+</li>
+<li>
+<p><a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/ExceptionHandler/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/ExceptionHandler">@ExceptionHandler</a>：用于声明异常处理方法，处理指定类型的异常。</p>
+</li>
+<li>
+<p><a class="user-mention notranslate" data-hovercard-type="user" data-hovercard-url="/users/ModelAttribute/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="https://github.com/ModelAttribute">@ModelAttribute</a>：用于声明在Controller的方法上，将数据绑定到Model中。</p>
+</li>
+<li>
+<p>@SessionAttributes：用于声明在Controller的方法上，将数据绑定到Session中。</p>
+</li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://niaidaye.github.io">独钓寒江雪的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","niaidaye/niaidaye.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+
+
+</html>
