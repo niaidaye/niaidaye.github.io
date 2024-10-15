@@ -1,5 +1,3 @@
-# Spring 基础知识
-
 ## 1. Spring和Spring框架
 
 Spring是一个开源的Java开发框架，由Pivotal团队开发，是目前最流行的Java开发框架之一。Spring框架是一个轻量级的控制反转（IoC）和面向切面（AOP）的容器框架。Spring框架的核心是Spring Core，它提供IoC和DI功能，并支持AOP。Spring框架还提供了众多的模块，如Spring MVC、Spring WebFlux、Spring Data、Spring Security、Spring Batch等，这些模块可以帮助开发者快速构建基于Spring的应用。
