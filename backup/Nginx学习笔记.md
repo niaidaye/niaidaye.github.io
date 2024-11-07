@@ -16,7 +16,7 @@
 
 ## 配置文件：
 
-```json
+```bash
 #user  nobody;
 #工作的线程(4核8线程那么下面就设置成8 物理硬件有关)
 worker_processes  1;
@@ -203,7 +203,7 @@ http {
 
 ## 反向代理
 
-```json
+```bash
 location ~ \.jpg$ {
             proxy_pass   http://10.7.182.110:8080;
         }
@@ -213,7 +213,7 @@ location ~ \.jpg$ {
 
 - **默认是轮循的策略：**
 
-```json
+```bash
 配置upstream
    upstream qianyu {
       server 10.7.182.110:8080;
@@ -227,7 +227,7 @@ location ~ \.jpg$ {
 
 - **权重（weight）：**
 
-```json
+```bash
 #负载均衡的配置
   upstream qianyu {
      server 10.7.182.110:8080 weight=2;
@@ -242,7 +242,7 @@ location ~ \.jpg$ {
 
 - **IPHash的使用：**
 
-```json
+```bash
  #负载均衡的配置
    upstream qianyu {
       ip_hash;
@@ -258,7 +258,7 @@ location ~ \.jpg$ {
 
 ## 动静分离
 
-```json
+```bash
 #虚拟一个动静分离的机器
    server {
      listen     9999;
@@ -287,7 +287,7 @@ location ~ \.jpg$ {
 
 ## 虚拟主机
 
-```json
+```bash
 server {
        listen     90;
        server_name localhost;

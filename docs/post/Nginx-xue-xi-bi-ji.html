@@ -28,7 +28,7 @@
 
 ## 配置文件：
 
-```json
+```bash
 #user  nobody;
 #工作的线程(4核8线程那么下面就设置成8 物理硬件有关)
 worker_processes  1;
@@ -215,7 +215,7 @@ http {
 
 ## 反向代理
 
-```json
+```bash
 location ~ \.jpg$ {
             proxy_pass   http://10.7.182.110:8080;
         }
@@ -225,7 +225,7 @@ location ~ \.jpg$ {
 
 - **默认是轮循的策略：**
 
-```json
+```bash
 配置upstream
    upstream qianyu {
       server 10.7.182.110:8080;
@@ -239,7 +239,7 @@ location ~ \.jpg$ {
 
 - **权重（weight）：**
 
-```json
+```bash
 #负载均衡的配置
   upstream qianyu {
      server 10.7.182.110:8080 weight=2;
@@ -254,7 +254,7 @@ location ~ \.jpg$ {
 
 - **IPHash的使用：**
 
-```json
+```bash
  #负载均衡的配置
    upstream qianyu {
       ip_hash;
@@ -270,7 +270,7 @@ location ~ \.jpg$ {
 
 ## 动静分离
 
-```json
+```bash
 #虚拟一个动静分离的机器
    server {
      listen     9999;
@@ -299,7 +299,7 @@ location ~ \.jpg$ {
 
 ## 虚拟主机
 
-```json
+```bash
 server {
        listen     90;
        server_name localhost;
@@ -352,7 +352,7 @@ server {
 
 ## 配置文件：
 
-```json
+```bash
 #user  nobody;
 #工作的线程(4核8线程那么下面就设置成8 物理硬件有关)
 worker_processes  1;
@@ -539,7 +539,7 @@ http {
 
 ## 反向代理
 
-```json
+```bash
 location ~ \.jpg$ {
             proxy_pass   http://10.7.182.110:8080;
         }
@@ -549,7 +549,7 @@ location ~ \.jpg$ {
 
 - **默认是轮循的策略：**
 
-```json
+```bash
 配置upstream
    upstream qianyu {
       server 10.7.182.110:8080;
@@ -563,7 +563,7 @@ location ~ \.jpg$ {
 
 - **权重（weight）：**
 
-```json
+```bash
 #负载均衡的配置
   upstream qianyu {
      server 10.7.182.110:8080 weight=2;
@@ -578,7 +578,7 @@ location ~ \.jpg$ {
 
 - **IPHash的使用：**
 
-```json
+```bash
  #负载均衡的配置
    upstream qianyu {
       ip_hash;
@@ -594,7 +594,7 @@ location ~ \.jpg$ {
 
 ## 动静分离
 
-```json
+```bash
 #虚拟一个动静分离的机器
    server {
      listen     9999;
@@ -623,7 +623,7 @@ location ~ \.jpg$ {
 
 ## 虚拟主机
 
-```json
+```bash
 server {
        listen     90;
        server_name localhost;
@@ -740,271 +740,271 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h2>安装步骤：</h2>
 <p>百度、Google、等等</p>
 <h2>配置文件：</h2>
-<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">#user  nobody;</span>
-<span class="pl-ii">#工作的线程(4核8线程那么下面就设置成8 物理硬件有关)</span>
-<span class="pl-ii">worker_processes  1;</span>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span>user  nobody;</span>
+<span class="pl-c"><span class="pl-c">#</span>工作的线程(4核8线程那么下面就设置成8 物理硬件有关)</span>
+worker_processes  1<span class="pl-k">;</span>
 
-<span class="pl-ii">#全局的错误日志存放的地方</span>
-<span class="pl-ii">#error_log  logs/error.log;</span>
+<span class="pl-c"><span class="pl-c">#</span>全局的错误日志存放的地方</span>
+<span class="pl-c"><span class="pl-c">#</span>error_log  logs/error.log;</span>
 
-<span class="pl-ii">#全局错误日志存放的地方 后面的notice表示的是输出错误日志的格式</span>
-<span class="pl-ii">#error_log  logs/error.log  notice;</span>
-<span class="pl-ii">#error_log  logs/error.log  info;</span>
+<span class="pl-c"><span class="pl-c">#</span>全局错误日志存放的地方 后面的notice表示的是输出错误日志的格式</span>
+<span class="pl-c"><span class="pl-c">#</span>error_log  logs/error.log  notice;</span>
+<span class="pl-c"><span class="pl-c">#</span>error_log  logs/error.log  info;</span>
 
-<span class="pl-ii">#nginx进程号存放的地方</span>
-<span class="pl-ii">#pid        logs/nginx.pid;</span>
-<span class="pl-ii">#最大的连接数(这个也跟硬件是有关系的)</span>
-<span class="pl-ii">events {</span>
-    <span class="pl-ii">worker_connections  1024;</span>
-<span class="pl-ii">}</span>
-<span class="pl-ii">#下面就是跟HTTP请求有关系的了</span>
-<span class="pl-ii">http {</span>
-    <span class="pl-ii">#表示的是当前服务器支持的类型</span>
-    <span class="pl-ii">include       mime.types;</span>
-    <span class="pl-ii">#默认传输的数据类型是流 </span>
-    <span class="pl-ii">default_type  application/octet-stream;</span>
+<span class="pl-c"><span class="pl-c">#</span>nginx进程号存放的地方</span>
+<span class="pl-c"><span class="pl-c">#</span>pid        logs/nginx.pid;</span>
+<span class="pl-c"><span class="pl-c">#</span>最大的连接数(这个也跟硬件是有关系的)</span>
+events {
+    worker_connections  1024<span class="pl-k">;</span>
+}
+<span class="pl-c"><span class="pl-c">#</span>下面就是跟HTTP请求有关系的了</span>
+http {
+    <span class="pl-c"><span class="pl-c">#</span>表示的是当前服务器支持的类型</span>
+    include       mime.types<span class="pl-k">;</span>
+    <span class="pl-c"><span class="pl-c">#</span>默认传输的数据类型是流 </span>
+    default_type  application/octet-stream<span class="pl-k">;</span>
 
-    <span class="pl-ii">#声明了一种日志格式 这种日志格式的名字叫做  main</span>
-    <span class="pl-ii">log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '</span>
-                      <span class="pl-ii">'$status $body_bytes_sent "$http_referer" '</span>
-                      <span class="pl-ii">'"$http_user_agent" "$http_x_forwarded_for"';</span>
+    <span class="pl-c"><span class="pl-c">#</span>声明了一种日志格式 这种日志格式的名字叫做  main</span>
+    log_format  main  <span class="pl-s"><span class="pl-pds">'</span>$remote_addr - $remote_user [$time_local] "$request" <span class="pl-pds">'</span></span>
+                      <span class="pl-s"><span class="pl-pds">'</span>$status $body_bytes_sent "$http_referer" <span class="pl-pds">'</span></span>
+                      <span class="pl-s"><span class="pl-pds">'</span>"$http_user_agent" "$http_x_forwarded_for"<span class="pl-pds">'</span></span><span class="pl-k">;</span>
 
-    <span class="pl-ii">#表示的是每一次请求的日志记录 格式就是上面的main格式</span>
-    <span class="pl-ii">access_log  logs/access.log  main;</span>
+    <span class="pl-c"><span class="pl-c">#</span>表示的是每一次请求的日志记录 格式就是上面的main格式</span>
+    access_log  logs/access.log  main<span class="pl-k">;</span>
     
-    <span class="pl-ii">#是否可以发送文件</span>
-    <span class="pl-ii">sendfile        on;</span>
-    <span class="pl-ii">#tcp_nopush     on;</span>
+    <span class="pl-c"><span class="pl-c">#</span>是否可以发送文件</span>
+    sendfile        on<span class="pl-k">;</span>
+    <span class="pl-c"><span class="pl-c">#</span>tcp_nopush     on;</span>
 
-    <span class="pl-ii">#这个是双活的超时的时间</span>
-    <span class="pl-ii">#keepalive_timeout  0;</span>
-    <span class="pl-ii">keepalive_timeout  65;</span>
+    <span class="pl-c"><span class="pl-c">#</span>这个是双活的超时的时间</span>
+    <span class="pl-c"><span class="pl-c">#</span>keepalive_timeout  0;</span>
+    keepalive_timeout  65<span class="pl-k">;</span>
 
-    <span class="pl-ii">#是否打开文件的压缩</span>
-    <span class="pl-ii">#gzip  on;</span>
+    <span class="pl-c"><span class="pl-c">#</span>是否打开文件的压缩</span>
+    <span class="pl-c"><span class="pl-c">#</span>gzip  on;</span>
 
-    <span class="pl-ii">#虚拟一个主机</span>
+    <span class="pl-c"><span class="pl-c">#</span>虚拟一个主机</span>
    
-   <span class="pl-ii">#负载均衡的配置</span>
-   <span class="pl-ii">upstream qianyu {</span>
-      <span class="pl-ii">ip_hash;</span>
-      <span class="pl-ii">server 10.7.182.110:8080;</span>
-      <span class="pl-ii">server 10.7.182.87:8080;</span>
-   <span class="pl-ii">}</span>
+   <span class="pl-c"><span class="pl-c">#</span>负载均衡的配置</span>
+   upstream qianyu {
+      ip_hash<span class="pl-k">;</span>
+      server 10.7.182.110:8080<span class="pl-k">;</span>
+      server 10.7.182.87:8080<span class="pl-k">;</span>
+   }
 
-    <span class="pl-ii">#server {</span>
-      <span class="pl-ii"># listen     90;</span>
-      <span class="pl-ii"># server_name localhost; </span>
-      <span class="pl-ii"># location / {</span>
-      <span class="pl-ii">#    root qianyu;</span>
-      <span class="pl-ii">#    index qianyu.html;</span>
-      <span class="pl-ii"># }</span>
-      <span class="pl-ii">#做一个反向代理</span>
-      <span class="pl-ii">#表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器</span>
-       <span class="pl-ii"># location ~ \.jpg$ {</span>
-       <span class="pl-ii">#     proxy_pass   http://10.7.182.110:8080;</span>
-       <span class="pl-ii"># }</span>
+    <span class="pl-c"><span class="pl-c">#</span>server {</span>
+      <span class="pl-c"><span class="pl-c">#</span> listen     90;</span>
+      <span class="pl-c"><span class="pl-c">#</span> server_name localhost; </span>
+      <span class="pl-c"><span class="pl-c">#</span> location / {</span>
+      <span class="pl-c"><span class="pl-c">#</span>    root qianyu;</span>
+      <span class="pl-c"><span class="pl-c">#</span>    index qianyu.html;</span>
+      <span class="pl-c"><span class="pl-c">#</span> }</span>
+      <span class="pl-c"><span class="pl-c">#</span>做一个反向代理</span>
+      <span class="pl-c"><span class="pl-c">#</span>表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器</span>
+       <span class="pl-c"><span class="pl-c">#</span> location ~ \.jpg$ {</span>
+       <span class="pl-c"><span class="pl-c">#</span>     proxy_pass   http://10.7.182.110:8080;</span>
+       <span class="pl-c"><span class="pl-c">#</span> }</span>
 
-      <span class="pl-ii">#下面要演示一个负载均衡的例子</span>
-       <span class="pl-ii">#location ~ \.jpg$ {</span>
-       <span class="pl-ii">#    proxy_pass   http://qianyu;</span>
-       <span class="pl-ii">#}</span>
-    <span class="pl-ii">#}</span>
+      <span class="pl-c"><span class="pl-c">#</span>下面要演示一个负载均衡的例子</span>
+       <span class="pl-c"><span class="pl-c">#</span>location ~ \.jpg$ {</span>
+       <span class="pl-c"><span class="pl-c">#</span>    proxy_pass   http://qianyu;</span>
+       <span class="pl-c"><span class="pl-c">#</span>}</span>
+    <span class="pl-c"><span class="pl-c">#</span>}</span>
 
-   <span class="pl-ii">#虚拟一个动静分离的机器</span>
-   <span class="pl-ii">server {</span>
-     <span class="pl-ii">listen     9999;</span>
-     <span class="pl-ii">server_name localhost;</span>
+   <span class="pl-c"><span class="pl-c">#</span>虚拟一个动静分离的机器</span>
+   server {
+     listen     9999<span class="pl-k">;</span>
+     server_name localhost<span class="pl-k">;</span>
      
-     <span class="pl-ii">#表示的是动态资源访问的机器</span>
+     <span class="pl-c"><span class="pl-c">#</span>表示的是动态资源访问的机器</span>
 
-      <span class="pl-ii">location / {</span>
-            <span class="pl-ii">proxy_pass   http://10.7.182.54:8080;</span>
-      <span class="pl-ii">}</span>
-    <span class="pl-ii">#表示的是非  css和js文件访问的地址</span>
-    <span class="pl-ii">location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt|flv|mid|doc|ppt|pdf|xls|mp3|wma)$</span>
+      location / {
+            proxy_pass   http://10.7.182.54:8080<span class="pl-k">;</span>
+      }
+    <span class="pl-c"><span class="pl-c">#</span>表示的是非  css和js文件访问的地址</span>
+    location <span class="pl-k">~</span> .<span class="pl-k">*</span><span class="pl-cce">\.</span>(htm<span class="pl-k">|</span>html<span class="pl-k">|</span>gif<span class="pl-k">|</span>jpg<span class="pl-k">|</span>jpeg<span class="pl-k">|</span>png<span class="pl-k">|</span>bmp<span class="pl-k">|</span>swf<span class="pl-k">|</span>ioc<span class="pl-k">|</span>rar<span class="pl-k">|</span>zip<span class="pl-k">|</span>txt<span class="pl-k">|</span>flv<span class="pl-k">|</span>mid<span class="pl-k">|</span>doc<span class="pl-k">|</span>ppt<span class="pl-k">|</span>pdf<span class="pl-k">|</span>xls<span class="pl-k">|</span>mp3<span class="pl-k">|</span>wma)$
         {
-            <span class="pl-ii">root /usr/local/webapp;</span>
-            <span class="pl-ii">expires 30d;</span>
+            root /usr/local/webapp<span class="pl-k">;</span>
+            expires 30d<span class="pl-k">;</span>
         }
-      <span class="pl-ii">#表示的是css和js的访问地址</span>
-      <span class="pl-ii">location ~ .*\.(js|css)?$</span>
+      <span class="pl-c"><span class="pl-c">#</span>表示的是css和js的访问地址</span>
+      location <span class="pl-k">~</span> .<span class="pl-k">*</span><span class="pl-cce">\.</span>(js<span class="pl-k">|</span>css)<span class="pl-k">?</span>$
        {
-         <span class="pl-ii">root /usr/local/webapp;</span>
-         <span class="pl-ii">expires 1h;</span>
+         root /usr/local/webapp<span class="pl-k">;</span>
+         expires 1h<span class="pl-k">;</span>
        }
 
-  <span class="pl-ii">}</span>
+  }
 
-    <span class="pl-ii">#虚拟了服务器</span>
-    <span class="pl-ii">server {</span>
-        <span class="pl-ii">#端口是  80</span>
-        <span class="pl-ii">listen       80;</span>
-        <span class="pl-ii">#这个表示的是虚拟服务器默认访问的是本机</span>
-        <span class="pl-ii">server_name  localhost;</span>
-        <span class="pl-ii">#这个是虚拟服务器的编码</span>
-        <span class="pl-ii">#charset koi8-r;</span>
-        <span class="pl-ii">#当前服务器的日志的存储的地方</span>
-        <span class="pl-ii">#access_log  logs/host.access.log  main;</span>
+    <span class="pl-c"><span class="pl-c">#</span>虚拟了服务器</span>
+    server {
+        <span class="pl-c"><span class="pl-c">#</span>端口是  80</span>
+        listen       80<span class="pl-k">;</span>
+        <span class="pl-c"><span class="pl-c">#</span>这个表示的是虚拟服务器默认访问的是本机</span>
+        server_name  localhost<span class="pl-k">;</span>
+        <span class="pl-c"><span class="pl-c">#</span>这个是虚拟服务器的编码</span>
+        <span class="pl-c"><span class="pl-c">#</span>charset koi8-r;</span>
+        <span class="pl-c"><span class="pl-c">#</span>当前服务器的日志的存储的地方</span>
+        <span class="pl-c"><span class="pl-c">#</span>access_log  logs/host.access.log  main;</span>
 
-        <span class="pl-ii">#做了一个地址的映射</span>
-        <span class="pl-ii">location / {</span>
-            <span class="pl-ii">root   html;</span>
-            <span class="pl-ii">index  index.html index.htm;</span>
-        <span class="pl-ii">}</span>
+        <span class="pl-c"><span class="pl-c">#</span>做了一个地址的映射</span>
+        location / {
+            root   html<span class="pl-k">;</span>
+            index  index.html index.htm<span class="pl-k">;</span>
+        }
         
-        <span class="pl-ii">#如果报404的时候访问的页面</span>
-        <span class="pl-ii">#error_page  404              /404.html;</span>
+        <span class="pl-c"><span class="pl-c">#</span>如果报404的时候访问的页面</span>
+        <span class="pl-c"><span class="pl-c">#</span>error_page  404              /404.html;</span>
 
-        <span class="pl-ii"># redirect server error pages to the static page /50x.html</span>
-        <span class="pl-ii">#报错50开头的是 就访问50x.html</span>
-        <span class="pl-ii">error_page   500 502 503 504  /50x.html;</span>
-        <span class="pl-ii">#下面对50x.html又做了一个映射  就访问根目录下的html中的  50x.html</span>
-        <span class="pl-ii">location = /50x.html {</span>
-            <span class="pl-ii">root   html;</span>
-        <span class="pl-ii">}</span>
+        <span class="pl-c"><span class="pl-c">#</span> redirect server error pages to the static page /50x.html</span>
+        <span class="pl-c"><span class="pl-c">#</span>报错50开头的是 就访问50x.html</span>
+        error_page   500 502 503 504  /50x.html<span class="pl-k">;</span>
+        <span class="pl-c"><span class="pl-c">#</span>下面对50x.html又做了一个映射  就访问根目录下的html中的  50x.html</span>
+        location = /50x.html {
+            root   html<span class="pl-k">;</span>
+        }
 
-        <span class="pl-ii"># proxy the PHP scripts to Apache listening on 127.0.0.1:80</span>
-        <span class="pl-ii">#</span>
-        <span class="pl-ii">#location ~ \.php$ {</span>
-        <span class="pl-ii">#    proxy_pass   http://127.0.0.1;</span>
-        <span class="pl-ii">#}</span>
+        <span class="pl-c"><span class="pl-c">#</span> proxy the PHP scripts to Apache listening on 127.0.0.1:80</span>
+        <span class="pl-c"><span class="pl-c">#</span></span>
+        <span class="pl-c"><span class="pl-c">#</span>location ~ \.php$ {</span>
+        <span class="pl-c"><span class="pl-c">#</span>    proxy_pass   http://127.0.0.1;</span>
+        <span class="pl-c"><span class="pl-c">#</span>}</span>
 
-        <span class="pl-ii"># pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000</span>
-        <span class="pl-ii">#</span>
-        <span class="pl-ii">#location ~ \.php$ {</span>
-        <span class="pl-ii">#    root           html;</span>
-        <span class="pl-ii">#    fastcgi_pass   127.0.0.1:9000;</span>
-        <span class="pl-ii">#    fastcgi_index  index.php;</span>
-        <span class="pl-ii">#    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;</span>
-        <span class="pl-ii">#    include        fastcgi_params;</span>
-        <span class="pl-ii">#}</span>
+        <span class="pl-c"><span class="pl-c">#</span> pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000</span>
+        <span class="pl-c"><span class="pl-c">#</span></span>
+        <span class="pl-c"><span class="pl-c">#</span>location ~ \.php$ {</span>
+        <span class="pl-c"><span class="pl-c">#</span>    root           html;</span>
+        <span class="pl-c"><span class="pl-c">#</span>    fastcgi_pass   127.0.0.1:9000;</span>
+        <span class="pl-c"><span class="pl-c">#</span>    fastcgi_index  index.php;</span>
+        <span class="pl-c"><span class="pl-c">#</span>    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;</span>
+        <span class="pl-c"><span class="pl-c">#</span>    include        fastcgi_params;</span>
+        <span class="pl-c"><span class="pl-c">#</span>}</span>
 
-        <span class="pl-ii"># deny access to .htaccess files, if Apache's document root</span>
-        <span class="pl-ii"># concurs with nginx's one</span>
-        <span class="pl-ii">#</span>
-        <span class="pl-ii">#location ~ /\.ht {</span>
-        <span class="pl-ii">#    deny  all;</span>
-        <span class="pl-ii">#}</span>
-    <span class="pl-ii">}</span>
-    <span class="pl-ii"># another virtual host using mix of IP-, name-, and port-based configuration</span>
-    <span class="pl-ii">#</span>
-    <span class="pl-ii">#server {</span>
-    <span class="pl-ii">#    listen       8000;</span>
-    <span class="pl-ii">#    listen       somename:8080;</span>
-    <span class="pl-ii">#    server_name  somename  alias  another.alias;</span>
+        <span class="pl-c"><span class="pl-c">#</span> deny access to .htaccess files, if Apache's document root</span>
+        <span class="pl-c"><span class="pl-c">#</span> concurs with nginx's one</span>
+        <span class="pl-c"><span class="pl-c">#</span></span>
+        <span class="pl-c"><span class="pl-c">#</span>location ~ /\.ht {</span>
+        <span class="pl-c"><span class="pl-c">#</span>    deny  all;</span>
+        <span class="pl-c"><span class="pl-c">#</span>}</span>
+    }
+    <span class="pl-c"><span class="pl-c">#</span> another virtual host using mix of IP-, name-, and port-based configuration</span>
+    <span class="pl-c"><span class="pl-c">#</span></span>
+    <span class="pl-c"><span class="pl-c">#</span>server {</span>
+    <span class="pl-c"><span class="pl-c">#</span>    listen       8000;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    listen       somename:8080;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    server_name  somename  alias  another.alias;</span>
 
-    <span class="pl-ii">#    location / {</span>
-    <span class="pl-ii">#        root   html;</span>
-    <span class="pl-ii">#        index  index.html index.htm;</span>
-    <span class="pl-ii">#    }</span>
-    <span class="pl-ii">#}</span>
-    <span class="pl-ii"># HTTPS server</span>
-    <span class="pl-ii">#</span>
-    <span class="pl-ii">#server {</span>
-    <span class="pl-ii">#    listen       443 ssl;</span>
-    <span class="pl-ii">#    server_name  localhost;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    location / {</span>
+    <span class="pl-c"><span class="pl-c">#</span>        root   html;</span>
+    <span class="pl-c"><span class="pl-c">#</span>        index  index.html index.htm;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    }</span>
+    <span class="pl-c"><span class="pl-c">#</span>}</span>
+    <span class="pl-c"><span class="pl-c">#</span> HTTPS server</span>
+    <span class="pl-c"><span class="pl-c">#</span></span>
+    <span class="pl-c"><span class="pl-c">#</span>server {</span>
+    <span class="pl-c"><span class="pl-c">#</span>    listen       443 ssl;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    server_name  localhost;</span>
 
-    <span class="pl-ii">#    ssl_certificate      cert.pem;</span>
-    <span class="pl-ii">#    ssl_certificate_key  cert.key;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    ssl_certificate      cert.pem;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    ssl_certificate_key  cert.key;</span>
 
-    <span class="pl-ii">#    ssl_session_cache    shared:SSL:1m;</span>
-    <span class="pl-ii">#    ssl_session_timeout  5m;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    ssl_session_cache    shared:SSL:1m;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    ssl_session_timeout  5m;</span>
 
-    <span class="pl-ii">#    ssl_ciphers  HIGH:!aNULL:!MD5;</span>
-    <span class="pl-ii">#    ssl_prefer_server_ciphers  on;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    ssl_ciphers  HIGH:!aNULL:!MD5;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    ssl_prefer_server_ciphers  on;</span>
 
-    <span class="pl-ii">#    location / {</span>
-    <span class="pl-ii">#        root   html;</span>
-    <span class="pl-ii">#        index  index.html index.htm;</span>
-    <span class="pl-ii">#    }</span>
-    <span class="pl-ii">#}</span>
+    <span class="pl-c"><span class="pl-c">#</span>    location / {</span>
+    <span class="pl-c"><span class="pl-c">#</span>        root   html;</span>
+    <span class="pl-c"><span class="pl-c">#</span>        index  index.html index.htm;</span>
+    <span class="pl-c"><span class="pl-c">#</span>    }</span>
+    <span class="pl-c"><span class="pl-c">#</span>}</span>
 
-<span class="pl-ii">}</span>
+}
 </pre></div>
 <h2>反向代理</h2>
-<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">location ~ \.jpg$ {</span>
-            <span class="pl-ii">proxy_pass   http://10.7.182.110:8080;</span>
-        <span class="pl-ii">}</span></pre></div>
+<div class="highlight highlight-source-shell"><pre class="notranslate">location <span class="pl-k">~</span> <span class="pl-cce">\.</span>jpg$ {
+            proxy_pass   http://10.7.182.110:8080<span class="pl-k">;</span>
+        }</pre></div>
 <h2>实现Nginx下的负载均衡</h2>
 <ul>
 <li><strong>默认是轮循的策略：</strong></li>
 </ul>
-<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">配置upstream</span>
-   <span class="pl-ii">upstream qianyu {</span>
-      <span class="pl-ii">server 10.7.182.110:8080;</span>
-      <span class="pl-ii">server 10.7.182.87:8080;</span>
-   <span class="pl-ii">}</span>
-   <span class="pl-ii">配置负载均衡</span>
-   <span class="pl-ii">location ~ \.jpg$ {</span>
-           <span class="pl-ii">proxy_pass   http://qianyu;</span>
-   <span class="pl-ii">}</span></pre></div>
+<div class="highlight highlight-source-shell"><pre class="notranslate">配置upstream
+   upstream qianyu {
+      server 10.7.182.110:8080<span class="pl-k">;</span>
+      server 10.7.182.87:8080<span class="pl-k">;</span>
+   }
+   配置负载均衡
+   location <span class="pl-k">~</span> <span class="pl-cce">\.</span>jpg$ {
+           proxy_pass   http://qianyu<span class="pl-k">;</span>
+   }</pre></div>
 <ul>
 <li><strong>权重（weight）：</strong></li>
 </ul>
-<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">#负载均衡的配置</span>
-  <span class="pl-ii">upstream qianyu {</span>
-     <span class="pl-ii">server 10.7.182.110:8080 weight=2;</span>
-     <span class="pl-ii">server 10.7.182.87:8080 weight=1;</span>
-  <span class="pl-ii">}</span>
- <span class="pl-ii">配置负载均衡</span>
-     <span class="pl-ii">location ~ \.jpg$ {</span>
-           <span class="pl-ii">proxy_pass   http://qianyu;</span>
-     <span class="pl-ii">}</span>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span>负载均衡的配置</span>
+  upstream qianyu {
+     server 10.7.182.110:8080 weight=2<span class="pl-k">;</span>
+     server 10.7.182.87:8080 weight=1<span class="pl-k">;</span>
+  }
+ 配置负载均衡
+     location <span class="pl-k">~</span> <span class="pl-cce">\.</span>jpg$ {
+           proxy_pass   http://qianyu<span class="pl-k">;</span>
+     }
 </pre></div>
 <ul>
 <li><strong>IPHash的使用：</strong></li>
 </ul>
-<div class="highlight highlight-source-json"><pre class="notranslate"> <span class="pl-ii">#负载均衡的配置</span>
-   <span class="pl-ii">upstream qianyu {</span>
-      <span class="pl-ii">ip_hash;</span>
-      <span class="pl-ii">server 10.7.182.110:8080;</span>
-      <span class="pl-ii">server 10.7.182.87:8080;</span>
-   <span class="pl-ii">}</span>
-<span class="pl-ii">配置负载均衡</span>
-    <span class="pl-ii">location ~ \.jpg$ {</span>
-           <span class="pl-ii">proxy_pass   http://qianyu;</span>
-    <span class="pl-ii">}</span>
+<div class="highlight highlight-source-shell"><pre class="notranslate"> <span class="pl-c"><span class="pl-c">#</span>负载均衡的配置</span>
+   upstream qianyu {
+      ip_hash<span class="pl-k">;</span>
+      server 10.7.182.110:8080<span class="pl-k">;</span>
+      server 10.7.182.87:8080<span class="pl-k">;</span>
+   }
+配置负载均衡
+    location <span class="pl-k">~</span> <span class="pl-cce">\.</span>jpg$ {
+           proxy_pass   http://qianyu<span class="pl-k">;</span>
+    }
 </pre></div>
 <h2>动静分离</h2>
-<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">#虚拟一个动静分离的机器</span>
-   <span class="pl-ii">server {</span>
-     <span class="pl-ii">listen     9999;</span>
-     <span class="pl-ii">server_name localhost;</span>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span>虚拟一个动静分离的机器</span>
+   server {
+     listen     9999<span class="pl-k">;</span>
+     server_name localhost<span class="pl-k">;</span>
 
-     <span class="pl-ii">#表示的是动态资源访问的机器</span>
+     <span class="pl-c"><span class="pl-c">#</span>表示的是动态资源访问的机器</span>
 
-      <span class="pl-ii">location / {</span>
-            <span class="pl-ii">proxy_pass   http://10.7.182.54:8080;</span>
-      <span class="pl-ii">}</span>
-    <span class="pl-ii">#表示的是非  css和js文件访问的地址</span>
-    <span class="pl-ii">location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt|flv|mid|doc|ppt|pdf|xls|mp3|wma)$</span>
+      location / {
+            proxy_pass   http://10.7.182.54:8080<span class="pl-k">;</span>
+      }
+    <span class="pl-c"><span class="pl-c">#</span>表示的是非  css和js文件访问的地址</span>
+    location <span class="pl-k">~</span> .<span class="pl-k">*</span><span class="pl-cce">\.</span>(htm<span class="pl-k">|</span>html<span class="pl-k">|</span>gif<span class="pl-k">|</span>jpg<span class="pl-k">|</span>jpeg<span class="pl-k">|</span>png<span class="pl-k">|</span>bmp<span class="pl-k">|</span>swf<span class="pl-k">|</span>ioc<span class="pl-k">|</span>rar<span class="pl-k">|</span>zip<span class="pl-k">|</span>txt<span class="pl-k">|</span>flv<span class="pl-k">|</span>mid<span class="pl-k">|</span>doc<span class="pl-k">|</span>ppt<span class="pl-k">|</span>pdf<span class="pl-k">|</span>xls<span class="pl-k">|</span>mp3<span class="pl-k">|</span>wma)$
         {
-            <span class="pl-ii">root /usr/local/webapp;</span>
-            <span class="pl-ii">expires 30d;</span>
+            root /usr/local/webapp<span class="pl-k">;</span>
+            expires 30d<span class="pl-k">;</span>
         }
-      <span class="pl-ii">#表示的是css和js的访问地址</span>
-      <span class="pl-ii">location ~ .*\.(js|css)?$</span>
+      <span class="pl-c"><span class="pl-c">#</span>表示的是css和js的访问地址</span>
+      location <span class="pl-k">~</span> .<span class="pl-k">*</span><span class="pl-cce">\.</span>(js<span class="pl-k">|</span>css)<span class="pl-k">?</span>$
   {
-         <span class="pl-ii">root /usr/local/webapp;</span>
-         <span class="pl-ii">expires 1h;</span>
+         root /usr/local/webapp<span class="pl-k">;</span>
+         expires 1h<span class="pl-k">;</span>
        }
 
-  <span class="pl-ii">}</span></pre></div>
+  }</pre></div>
 <h2>虚拟主机</h2>
-<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">server {</span>
-       <span class="pl-ii">listen     90;</span>
-       <span class="pl-ii">server_name localhost;</span>
-       <span class="pl-ii">location / {</span>
-          <span class="pl-ii">root qianyu;</span>
-          <span class="pl-ii">index qianyu.html;</span>
-       <span class="pl-ii">}</span>
-      <span class="pl-ii">#做一个反向代理</span>
-      <span class="pl-ii">#表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器</span>
-        <span class="pl-ii">location ~ \.jpg$ {</span>
-            <span class="pl-ii">proxy_pass   http://10.7.182.110:8080;</span>
-        <span class="pl-ii">}</span>
-<span class="pl-ii">}</span></pre></div>
+<div class="highlight highlight-source-shell"><pre class="notranslate">server {
+       listen     90<span class="pl-k">;</span>
+       server_name localhost<span class="pl-k">;</span>
+       location / {
+          root qianyu<span class="pl-k">;</span>
+          index qianyu.html<span class="pl-k">;</span>
+       }
+      <span class="pl-c"><span class="pl-c">#</span>做一个反向代理</span>
+      <span class="pl-c"><span class="pl-c">#</span>表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器</span>
+        location <span class="pl-k">~</span> <span class="pl-cce">\.</span>jpg$ {
+            proxy_pass   http://10.7.182.110:8080<span class="pl-k">;</span>
+        }
+}</pre></div>
 <h2>常用命令</h2>
 <ol>
 <li>ps aux | grep nginx 查看nginx运行状态</li>
