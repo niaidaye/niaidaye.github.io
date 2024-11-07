@@ -305,7 +305,7 @@ server {
 
 ## 常用命令
 
-1. [ps](http://1.ps/)  aux | grep nginx 查看nginx运行状态
+1. ps aux | grep nginx 查看nginx运行状态
 2. systemctl  start  nginx.service  启动nginx
 3. nginx -s stop  立即停止nginx服务
 4. nginx -s quit  从容停止
