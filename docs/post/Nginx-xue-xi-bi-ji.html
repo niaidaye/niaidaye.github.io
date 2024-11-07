@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/27543204?v=4"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="## Nginx是什么？
+
+是一个http服务器，Nginx是一款高性能的http服务器/反向代理服务器及电子邮件（IMAP/POP3）代理服务器
+
+## 能干什么？
+
+- 可以作为Web服务器
+- 可以作为邮件服务器
+- 可以作为反向代理的服务器
+- 动静分离（就是将动态资源和静态资源分隔开）
+- 可以实现负载均衡
+
+## 安装步骤：
+
+百度、Google、等等
+
+## 配置文件：
+
+```json
+#user  nobody;
+#工作的线程(4核8线程那么下面就设置成8 物理硬件有关)
+worker_processes  1;
+
+#全局的错误日志存放的地方
+#error_log  logs/error.log;
+
+#全局错误日志存放的地方 后面的notice表示的是输出错误日志的格式
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#nginx进程号存放的地方
+#pid        logs/nginx.pid;
+#最大的连接数(这个也跟硬件是有关系的)
+events {
+    worker_connections  1024;
+}
+#下面就是跟HTTP请求有关系的了
+http {
+    #表示的是当前服务器支持的类型
+    include       mime.types;
+    #默认传输的数据类型是流 
+    default_type  application/octet-stream;
+
+    #声明了一种日志格式 这种日志格式的名字叫做  main
+    log_format  main  '$remote_addr - $remote_user [$time_local] '$request' '
+                      '$status $body_bytes_sent '$http_referer' '
+                      ''$http_user_agent' '$http_x_forwarded_for'';
+
+    #表示的是每一次请求的日志记录 格式就是上面的main格式
+    access_log  logs/access.log  main;
+    
+    #是否可以发送文件
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #这个是双活的超时的时间
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #是否打开文件的压缩
+    #gzip  on;
+
+    #虚拟一个主机
+   
+   #负载均衡的配置
+   upstream qianyu {
+      ip_hash;
+      server 10.7.182.110:8080;
+      server 10.7.182.87:8080;
+   }
+
+    #server {
+      # listen     90;
+      # server_name localhost; 
+      # location / {
+      #    root qianyu;
+      #    index qianyu.html;
+      # }
+      #做一个反向代理
+      #表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器
+       # location ~ \.jpg$ {
+       #     proxy_pass   http://10.7.182.110:8080;
+       # }
+
+      #下面要演示一个负载均衡的例子
+       #location ~ \.jpg$ {
+       #    proxy_pass   http://qianyu;
+       #}
+    #}
+
+   #虚拟一个动静分离的机器
+   server {
+     listen     9999;
+     server_name localhost;
+     
+     #表示的是动态资源访问的机器
+
+      location / {
+            proxy_pass   http://10.7.182.54:8080;
+      }
+    #表示的是非  css和js文件访问的地址
+    location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt|flv|mid|doc|ppt|pdf|xls|mp3|wma)$
+        {
+            root /usr/local/webapp;
+            expires 30d;
+        }
+      #表示的是css和js的访问地址
+      location ~ .*\.(js|css)?$
+       {
+         root /usr/local/webapp;
+         expires 1h;
+       }
+
+  }
+
+    #虚拟了服务器
+    server {
+        #端口是  80
+        listen       80;
+        #这个表示的是虚拟服务器默认访问的是本机
+        server_name  localhost;
+        #这个是虚拟服务器的编码
+        #charset koi8-r;
+        #当前服务器的日志的存储的地方
+        #access_log  logs/host.access.log  main;
+
+        #做了一个地址的映射
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+        
+        #如果报404的时候访问的页面
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #报错50开头的是 就访问50x.html
+        error_page   500 502 503 504  /50x.html;
+        #下面对50x.html又做了一个映射  就访问根目录下的html中的  50x.html
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+}
+
+```
+
+## 反向代理
+
+```json
+location ~ \.jpg$ {
+            proxy_pass   http://10.7.182.110:8080;
+        }
+```
+
+## 实现Nginx下的负载均衡
+
+- **默认是轮循的策略：**
+
+```json
+配置upstream
+   upstream qianyu {
+      server 10.7.182.110:8080;
+      server 10.7.182.87:8080;
+   }
+   配置负载均衡
+   location ~ \.jpg$ {
+           proxy_pass   http://qianyu;
+   }
+```
+
+- **权重（weight）：**
+
+```json
+#负载均衡的配置
+  upstream qianyu {
+     server 10.7.182.110:8080 weight=2;
+     server 10.7.182.87:8080 weight=1;
+  }
+ 配置负载均衡
+     location ~ \.jpg$ {
+           proxy_pass   http://qianyu;
+     }
+
+```
+
+- **IPHash的使用：**
+
+```json
+ #负载均衡的配置
+   upstream qianyu {
+      ip_hash;
+      server 10.7.182.110:8080;
+      server 10.7.182.87:8080;
+   }
+配置负载均衡
+    location ~ \.jpg$ {
+           proxy_pass   http://qianyu;
+    }
+
+```
+
+## 动静分离
+
+```json
+#虚拟一个动静分离的机器
+   server {
+     listen     9999;
+     server_name localhost;
+
+     #表示的是动态资源访问的机器
+
+      location / {
+            proxy_pass   http://10.7.182.54:8080;
+      }
+    #表示的是非  css和js文件访问的地址
+    location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt|flv|mid|doc|ppt|pdf|xls|mp3|wma)$
+        {
+            root /usr/local/webapp;
+            expires 30d;
+        }
+      #表示的是css和js的访问地址
+      location ~ .*\.(js|css)?$
+  {
+         root /usr/local/webapp;
+         expires 1h;
+       }
+
+  }
+```
+
+## 虚拟主机
+
+```json
+server {
+       listen     90;
+       server_name localhost;
+       location / {
+          root qianyu;
+          index qianyu.html;
+       }
+      #做一个反向代理
+      #表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器
+        location ~ \.jpg$ {
+            proxy_pass   http://10.7.182.110:8080;
+        }
+}
+```
+
+## 常用命令
+
+1. [ps](http://1.ps/)  aux | grep nginx 查看nginx运行状态
+2. systemctl  start  nginx.service  启动nginx
+3. nginx -s stop  立即停止nginx服务
+4. nginx -s quit  从容停止
+5. killall  nginx 杀死所有的nginx 进程
+6. systemctl   stop nginx.service  停止nginx服务器
+7. systemctl   restart  ngnix.service  重启nginx服务器
+8. nginx  -s  reload   重新载入配置文件文件
+
+## 文件位置
+
+1. rpm  -ql  nginx    查看nginx安装列表，可以看到nginx所有的安装位置
+2. 总配置文件：/etc/nginx/nginx.conf
+3. /etc/nginx/conf.d  所有的nginx自定义配置文件
+4. /var/log/nginx/error.log  错误日志文件
+5. /usr/share/nginx/html   服务器默认启动目录。">
+<meta property="og:title" content="Nginx学习笔记">
+<meta property="og:description" content="## Nginx是什么？
+
+是一个http服务器，Nginx是一款高性能的http服务器/反向代理服务器及电子邮件（IMAP/POP3）代理服务器
+
+## 能干什么？
+
+- 可以作为Web服务器
+- 可以作为邮件服务器
+- 可以作为反向代理的服务器
+- 动静分离（就是将动态资源和静态资源分隔开）
+- 可以实现负载均衡
+
+## 安装步骤：
+
+百度、Google、等等
+
+## 配置文件：
+
+```json
+#user  nobody;
+#工作的线程(4核8线程那么下面就设置成8 物理硬件有关)
+worker_processes  1;
+
+#全局的错误日志存放的地方
+#error_log  logs/error.log;
+
+#全局错误日志存放的地方 后面的notice表示的是输出错误日志的格式
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#nginx进程号存放的地方
+#pid        logs/nginx.pid;
+#最大的连接数(这个也跟硬件是有关系的)
+events {
+    worker_connections  1024;
+}
+#下面就是跟HTTP请求有关系的了
+http {
+    #表示的是当前服务器支持的类型
+    include       mime.types;
+    #默认传输的数据类型是流 
+    default_type  application/octet-stream;
+
+    #声明了一种日志格式 这种日志格式的名字叫做  main
+    log_format  main  '$remote_addr - $remote_user [$time_local] '$request' '
+                      '$status $body_bytes_sent '$http_referer' '
+                      ''$http_user_agent' '$http_x_forwarded_for'';
+
+    #表示的是每一次请求的日志记录 格式就是上面的main格式
+    access_log  logs/access.log  main;
+    
+    #是否可以发送文件
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #这个是双活的超时的时间
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #是否打开文件的压缩
+    #gzip  on;
+
+    #虚拟一个主机
+   
+   #负载均衡的配置
+   upstream qianyu {
+      ip_hash;
+      server 10.7.182.110:8080;
+      server 10.7.182.87:8080;
+   }
+
+    #server {
+      # listen     90;
+      # server_name localhost; 
+      # location / {
+      #    root qianyu;
+      #    index qianyu.html;
+      # }
+      #做一个反向代理
+      #表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器
+       # location ~ \.jpg$ {
+       #     proxy_pass   http://10.7.182.110:8080;
+       # }
+
+      #下面要演示一个负载均衡的例子
+       #location ~ \.jpg$ {
+       #    proxy_pass   http://qianyu;
+       #}
+    #}
+
+   #虚拟一个动静分离的机器
+   server {
+     listen     9999;
+     server_name localhost;
+     
+     #表示的是动态资源访问的机器
+
+      location / {
+            proxy_pass   http://10.7.182.54:8080;
+      }
+    #表示的是非  css和js文件访问的地址
+    location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt|flv|mid|doc|ppt|pdf|xls|mp3|wma)$
+        {
+            root /usr/local/webapp;
+            expires 30d;
+        }
+      #表示的是css和js的访问地址
+      location ~ .*\.(js|css)?$
+       {
+         root /usr/local/webapp;
+         expires 1h;
+       }
+
+  }
+
+    #虚拟了服务器
+    server {
+        #端口是  80
+        listen       80;
+        #这个表示的是虚拟服务器默认访问的是本机
+        server_name  localhost;
+        #这个是虚拟服务器的编码
+        #charset koi8-r;
+        #当前服务器的日志的存储的地方
+        #access_log  logs/host.access.log  main;
+
+        #做了一个地址的映射
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+        
+        #如果报404的时候访问的页面
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #报错50开头的是 就访问50x.html
+        error_page   500 502 503 504  /50x.html;
+        #下面对50x.html又做了一个映射  就访问根目录下的html中的  50x.html
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+}
+
+```
+
+## 反向代理
+
+```json
+location ~ \.jpg$ {
+            proxy_pass   http://10.7.182.110:8080;
+        }
+```
+
+## 实现Nginx下的负载均衡
+
+- **默认是轮循的策略：**
+
+```json
+配置upstream
+   upstream qianyu {
+      server 10.7.182.110:8080;
+      server 10.7.182.87:8080;
+   }
+   配置负载均衡
+   location ~ \.jpg$ {
+           proxy_pass   http://qianyu;
+   }
+```
+
+- **权重（weight）：**
+
+```json
+#负载均衡的配置
+  upstream qianyu {
+     server 10.7.182.110:8080 weight=2;
+     server 10.7.182.87:8080 weight=1;
+  }
+ 配置负载均衡
+     location ~ \.jpg$ {
+           proxy_pass   http://qianyu;
+     }
+
+```
+
+- **IPHash的使用：**
+
+```json
+ #负载均衡的配置
+   upstream qianyu {
+      ip_hash;
+      server 10.7.182.110:8080;
+      server 10.7.182.87:8080;
+   }
+配置负载均衡
+    location ~ \.jpg$ {
+           proxy_pass   http://qianyu;
+    }
+
+```
+
+## 动静分离
+
+```json
+#虚拟一个动静分离的机器
+   server {
+     listen     9999;
+     server_name localhost;
+
+     #表示的是动态资源访问的机器
+
+      location / {
+            proxy_pass   http://10.7.182.54:8080;
+      }
+    #表示的是非  css和js文件访问的地址
+    location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt|flv|mid|doc|ppt|pdf|xls|mp3|wma)$
+        {
+            root /usr/local/webapp;
+            expires 30d;
+        }
+      #表示的是css和js的访问地址
+      location ~ .*\.(js|css)?$
+  {
+         root /usr/local/webapp;
+         expires 1h;
+       }
+
+  }
+```
+
+## 虚拟主机
+
+```json
+server {
+       listen     90;
+       server_name localhost;
+       location / {
+          root qianyu;
+          index qianyu.html;
+       }
+      #做一个反向代理
+      #表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器
+        location ~ \.jpg$ {
+            proxy_pass   http://10.7.182.110:8080;
+        }
+}
+```
+
+## 常用命令
+
+1. [ps](http://1.ps/)  aux | grep nginx 查看nginx运行状态
+2. systemctl  start  nginx.service  启动nginx
+3. nginx -s stop  立即停止nginx服务
+4. nginx -s quit  从容停止
+5. killall  nginx 杀死所有的nginx 进程
+6. systemctl   stop nginx.service  停止nginx服务器
+7. systemctl   restart  ngnix.service  重启nginx服务器
+8. nginx  -s  reload   重新载入配置文件文件
+
+## 文件位置
+
+1. rpm  -ql  nginx    查看nginx安装列表，可以看到nginx所有的安装位置
+2. 总配置文件：/etc/nginx/nginx.conf
+3. /etc/nginx/conf.d  所有的nginx自定义配置文件
+4. /var/log/nginx/error.log  错误日志文件
+5. /usr/share/nginx/html   服务器默认启动目录。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://niaidaye.github.io/post/Nginx-xue-xi-bi-ji.html">
+<meta property="og:image" content="https://avatars.githubusercontent.com/u/27543204?v=4">
+<title>Nginx学习笔记</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">Nginx学习笔记</h1>
+<div class="title-right">
+    <a href="https://niaidaye.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/niaidaye/niaidaye.github.io/issues/11" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h2>Nginx是什么？</h2>
+<p>是一个http服务器，Nginx是一款高性能的http服务器/反向代理服务器及电子邮件（IMAP/POP3）代理服务器</p>
+<h2>能干什么？</h2>
+<ul>
+<li>可以作为Web服务器</li>
+<li>可以作为邮件服务器</li>
+<li>可以作为反向代理的服务器</li>
+<li>动静分离（就是将动态资源和静态资源分隔开）</li>
+<li>可以实现负载均衡</li>
+</ul>
+<h2>安装步骤：</h2>
+<p>百度、Google、等等</p>
+<h2>配置文件：</h2>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">#user  nobody;</span>
+<span class="pl-ii">#工作的线程(4核8线程那么下面就设置成8 物理硬件有关)</span>
+<span class="pl-ii">worker_processes  1;</span>
+
+<span class="pl-ii">#全局的错误日志存放的地方</span>
+<span class="pl-ii">#error_log  logs/error.log;</span>
+
+<span class="pl-ii">#全局错误日志存放的地方 后面的notice表示的是输出错误日志的格式</span>
+<span class="pl-ii">#error_log  logs/error.log  notice;</span>
+<span class="pl-ii">#error_log  logs/error.log  info;</span>
+
+<span class="pl-ii">#nginx进程号存放的地方</span>
+<span class="pl-ii">#pid        logs/nginx.pid;</span>
+<span class="pl-ii">#最大的连接数(这个也跟硬件是有关系的)</span>
+<span class="pl-ii">events {</span>
+    <span class="pl-ii">worker_connections  1024;</span>
+<span class="pl-ii">}</span>
+<span class="pl-ii">#下面就是跟HTTP请求有关系的了</span>
+<span class="pl-ii">http {</span>
+    <span class="pl-ii">#表示的是当前服务器支持的类型</span>
+    <span class="pl-ii">include       mime.types;</span>
+    <span class="pl-ii">#默认传输的数据类型是流 </span>
+    <span class="pl-ii">default_type  application/octet-stream;</span>
+
+    <span class="pl-ii">#声明了一种日志格式 这种日志格式的名字叫做  main</span>
+    <span class="pl-ii">log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '</span>
+                      <span class="pl-ii">'$status $body_bytes_sent "$http_referer" '</span>
+                      <span class="pl-ii">'"$http_user_agent" "$http_x_forwarded_for"';</span>
+
+    <span class="pl-ii">#表示的是每一次请求的日志记录 格式就是上面的main格式</span>
+    <span class="pl-ii">access_log  logs/access.log  main;</span>
+    
+    <span class="pl-ii">#是否可以发送文件</span>
+    <span class="pl-ii">sendfile        on;</span>
+    <span class="pl-ii">#tcp_nopush     on;</span>
+
+    <span class="pl-ii">#这个是双活的超时的时间</span>
+    <span class="pl-ii">#keepalive_timeout  0;</span>
+    <span class="pl-ii">keepalive_timeout  65;</span>
+
+    <span class="pl-ii">#是否打开文件的压缩</span>
+    <span class="pl-ii">#gzip  on;</span>
+
+    <span class="pl-ii">#虚拟一个主机</span>
+   
+   <span class="pl-ii">#负载均衡的配置</span>
+   <span class="pl-ii">upstream qianyu {</span>
+      <span class="pl-ii">ip_hash;</span>
+      <span class="pl-ii">server 10.7.182.110:8080;</span>
+      <span class="pl-ii">server 10.7.182.87:8080;</span>
+   <span class="pl-ii">}</span>
+
+    <span class="pl-ii">#server {</span>
+      <span class="pl-ii"># listen     90;</span>
+      <span class="pl-ii"># server_name localhost; </span>
+      <span class="pl-ii"># location / {</span>
+      <span class="pl-ii">#    root qianyu;</span>
+      <span class="pl-ii">#    index qianyu.html;</span>
+      <span class="pl-ii"># }</span>
+      <span class="pl-ii">#做一个反向代理</span>
+      <span class="pl-ii">#表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器</span>
+       <span class="pl-ii"># location ~ \.jpg$ {</span>
+       <span class="pl-ii">#     proxy_pass   http://10.7.182.110:8080;</span>
+       <span class="pl-ii"># }</span>
+
+      <span class="pl-ii">#下面要演示一个负载均衡的例子</span>
+       <span class="pl-ii">#location ~ \.jpg$ {</span>
+       <span class="pl-ii">#    proxy_pass   http://qianyu;</span>
+       <span class="pl-ii">#}</span>
+    <span class="pl-ii">#}</span>
+
+   <span class="pl-ii">#虚拟一个动静分离的机器</span>
+   <span class="pl-ii">server {</span>
+     <span class="pl-ii">listen     9999;</span>
+     <span class="pl-ii">server_name localhost;</span>
+     
+     <span class="pl-ii">#表示的是动态资源访问的机器</span>
+
+      <span class="pl-ii">location / {</span>
+            <span class="pl-ii">proxy_pass   http://10.7.182.54:8080;</span>
+      <span class="pl-ii">}</span>
+    <span class="pl-ii">#表示的是非  css和js文件访问的地址</span>
+    <span class="pl-ii">location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt|flv|mid|doc|ppt|pdf|xls|mp3|wma)$</span>
+        {
+            <span class="pl-ii">root /usr/local/webapp;</span>
+            <span class="pl-ii">expires 30d;</span>
+        }
+      <span class="pl-ii">#表示的是css和js的访问地址</span>
+      <span class="pl-ii">location ~ .*\.(js|css)?$</span>
+       {
+         <span class="pl-ii">root /usr/local/webapp;</span>
+         <span class="pl-ii">expires 1h;</span>
+       }
+
+  <span class="pl-ii">}</span>
+
+    <span class="pl-ii">#虚拟了服务器</span>
+    <span class="pl-ii">server {</span>
+        <span class="pl-ii">#端口是  80</span>
+        <span class="pl-ii">listen       80;</span>
+        <span class="pl-ii">#这个表示的是虚拟服务器默认访问的是本机</span>
+        <span class="pl-ii">server_name  localhost;</span>
+        <span class="pl-ii">#这个是虚拟服务器的编码</span>
+        <span class="pl-ii">#charset koi8-r;</span>
+        <span class="pl-ii">#当前服务器的日志的存储的地方</span>
+        <span class="pl-ii">#access_log  logs/host.access.log  main;</span>
+
+        <span class="pl-ii">#做了一个地址的映射</span>
+        <span class="pl-ii">location / {</span>
+            <span class="pl-ii">root   html;</span>
+            <span class="pl-ii">index  index.html index.htm;</span>
+        <span class="pl-ii">}</span>
+        
+        <span class="pl-ii">#如果报404的时候访问的页面</span>
+        <span class="pl-ii">#error_page  404              /404.html;</span>
+
+        <span class="pl-ii"># redirect server error pages to the static page /50x.html</span>
+        <span class="pl-ii">#报错50开头的是 就访问50x.html</span>
+        <span class="pl-ii">error_page   500 502 503 504  /50x.html;</span>
+        <span class="pl-ii">#下面对50x.html又做了一个映射  就访问根目录下的html中的  50x.html</span>
+        <span class="pl-ii">location = /50x.html {</span>
+            <span class="pl-ii">root   html;</span>
+        <span class="pl-ii">}</span>
+
+        <span class="pl-ii"># proxy the PHP scripts to Apache listening on 127.0.0.1:80</span>
+        <span class="pl-ii">#</span>
+        <span class="pl-ii">#location ~ \.php$ {</span>
+        <span class="pl-ii">#    proxy_pass   http://127.0.0.1;</span>
+        <span class="pl-ii">#}</span>
+
+        <span class="pl-ii"># pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000</span>
+        <span class="pl-ii">#</span>
+        <span class="pl-ii">#location ~ \.php$ {</span>
+        <span class="pl-ii">#    root           html;</span>
+        <span class="pl-ii">#    fastcgi_pass   127.0.0.1:9000;</span>
+        <span class="pl-ii">#    fastcgi_index  index.php;</span>
+        <span class="pl-ii">#    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;</span>
+        <span class="pl-ii">#    include        fastcgi_params;</span>
+        <span class="pl-ii">#}</span>
+
+        <span class="pl-ii"># deny access to .htaccess files, if Apache's document root</span>
+        <span class="pl-ii"># concurs with nginx's one</span>
+        <span class="pl-ii">#</span>
+        <span class="pl-ii">#location ~ /\.ht {</span>
+        <span class="pl-ii">#    deny  all;</span>
+        <span class="pl-ii">#}</span>
+    <span class="pl-ii">}</span>
+    <span class="pl-ii"># another virtual host using mix of IP-, name-, and port-based configuration</span>
+    <span class="pl-ii">#</span>
+    <span class="pl-ii">#server {</span>
+    <span class="pl-ii">#    listen       8000;</span>
+    <span class="pl-ii">#    listen       somename:8080;</span>
+    <span class="pl-ii">#    server_name  somename  alias  another.alias;</span>
+
+    <span class="pl-ii">#    location / {</span>
+    <span class="pl-ii">#        root   html;</span>
+    <span class="pl-ii">#        index  index.html index.htm;</span>
+    <span class="pl-ii">#    }</span>
+    <span class="pl-ii">#}</span>
+    <span class="pl-ii"># HTTPS server</span>
+    <span class="pl-ii">#</span>
+    <span class="pl-ii">#server {</span>
+    <span class="pl-ii">#    listen       443 ssl;</span>
+    <span class="pl-ii">#    server_name  localhost;</span>
+
+    <span class="pl-ii">#    ssl_certificate      cert.pem;</span>
+    <span class="pl-ii">#    ssl_certificate_key  cert.key;</span>
+
+    <span class="pl-ii">#    ssl_session_cache    shared:SSL:1m;</span>
+    <span class="pl-ii">#    ssl_session_timeout  5m;</span>
+
+    <span class="pl-ii">#    ssl_ciphers  HIGH:!aNULL:!MD5;</span>
+    <span class="pl-ii">#    ssl_prefer_server_ciphers  on;</span>
+
+    <span class="pl-ii">#    location / {</span>
+    <span class="pl-ii">#        root   html;</span>
+    <span class="pl-ii">#        index  index.html index.htm;</span>
+    <span class="pl-ii">#    }</span>
+    <span class="pl-ii">#}</span>
+
+<span class="pl-ii">}</span>
+</pre></div>
+<h2>反向代理</h2>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">location ~ \.jpg$ {</span>
+            <span class="pl-ii">proxy_pass   http://10.7.182.110:8080;</span>
+        <span class="pl-ii">}</span></pre></div>
+<h2>实现Nginx下的负载均衡</h2>
+<ul>
+<li><strong>默认是轮循的策略：</strong></li>
+</ul>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">配置upstream</span>
+   <span class="pl-ii">upstream qianyu {</span>
+      <span class="pl-ii">server 10.7.182.110:8080;</span>
+      <span class="pl-ii">server 10.7.182.87:8080;</span>
+   <span class="pl-ii">}</span>
+   <span class="pl-ii">配置负载均衡</span>
+   <span class="pl-ii">location ~ \.jpg$ {</span>
+           <span class="pl-ii">proxy_pass   http://qianyu;</span>
+   <span class="pl-ii">}</span></pre></div>
+<ul>
+<li><strong>权重（weight）：</strong></li>
+</ul>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">#负载均衡的配置</span>
+  <span class="pl-ii">upstream qianyu {</span>
+     <span class="pl-ii">server 10.7.182.110:8080 weight=2;</span>
+     <span class="pl-ii">server 10.7.182.87:8080 weight=1;</span>
+  <span class="pl-ii">}</span>
+ <span class="pl-ii">配置负载均衡</span>
+     <span class="pl-ii">location ~ \.jpg$ {</span>
+           <span class="pl-ii">proxy_pass   http://qianyu;</span>
+     <span class="pl-ii">}</span>
+</pre></div>
+<ul>
+<li><strong>IPHash的使用：</strong></li>
+</ul>
+<div class="highlight highlight-source-json"><pre class="notranslate"> <span class="pl-ii">#负载均衡的配置</span>
+   <span class="pl-ii">upstream qianyu {</span>
+      <span class="pl-ii">ip_hash;</span>
+      <span class="pl-ii">server 10.7.182.110:8080;</span>
+      <span class="pl-ii">server 10.7.182.87:8080;</span>
+   <span class="pl-ii">}</span>
+<span class="pl-ii">配置负载均衡</span>
+    <span class="pl-ii">location ~ \.jpg$ {</span>
+           <span class="pl-ii">proxy_pass   http://qianyu;</span>
+    <span class="pl-ii">}</span>
+</pre></div>
+<h2>动静分离</h2>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">#虚拟一个动静分离的机器</span>
+   <span class="pl-ii">server {</span>
+     <span class="pl-ii">listen     9999;</span>
+     <span class="pl-ii">server_name localhost;</span>
+
+     <span class="pl-ii">#表示的是动态资源访问的机器</span>
+
+      <span class="pl-ii">location / {</span>
+            <span class="pl-ii">proxy_pass   http://10.7.182.54:8080;</span>
+      <span class="pl-ii">}</span>
+    <span class="pl-ii">#表示的是非  css和js文件访问的地址</span>
+    <span class="pl-ii">location ~ .*\.(htm|html|gif|jpg|jpeg|png|bmp|swf|ioc|rar|zip|txt|flv|mid|doc|ppt|pdf|xls|mp3|wma)$</span>
+        {
+            <span class="pl-ii">root /usr/local/webapp;</span>
+            <span class="pl-ii">expires 30d;</span>
+        }
+      <span class="pl-ii">#表示的是css和js的访问地址</span>
+      <span class="pl-ii">location ~ .*\.(js|css)?$</span>
+  {
+         <span class="pl-ii">root /usr/local/webapp;</span>
+         <span class="pl-ii">expires 1h;</span>
+       }
+
+  <span class="pl-ii">}</span></pre></div>
+<h2>虚拟主机</h2>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ii">server {</span>
+       <span class="pl-ii">listen     90;</span>
+       <span class="pl-ii">server_name localhost;</span>
+       <span class="pl-ii">location / {</span>
+          <span class="pl-ii">root qianyu;</span>
+          <span class="pl-ii">index qianyu.html;</span>
+       <span class="pl-ii">}</span>
+      <span class="pl-ii">#做一个反向代理</span>
+      <span class="pl-ii">#表示的是 如果你访问的后缀是 .jpg结尾的话那么 就访问下面的另外的服务器</span>
+        <span class="pl-ii">location ~ \.jpg$ {</span>
+            <span class="pl-ii">proxy_pass   http://10.7.182.110:8080;</span>
+        <span class="pl-ii">}</span>
+<span class="pl-ii">}</span></pre></div>
+<h2>常用命令</h2>
+<ol>
+<li><a href="http://1.ps/" rel="nofollow">ps</a>  aux | grep nginx 查看nginx运行状态</li>
+<li>systemctl  start  nginx.service  启动nginx</li>
+<li>nginx -s stop  立即停止nginx服务</li>
+<li>nginx -s quit  从容停止</li>
+<li>killall  nginx 杀死所有的nginx 进程</li>
+<li>systemctl   stop nginx.service  停止nginx服务器</li>
+<li>systemctl   restart  ngnix.service  重启nginx服务器</li>
+<li>nginx  -s  reload   重新载入配置文件文件</li>
+</ol>
+<h2>文件位置</h2>
+<ol>
+<li>rpm  -ql  nginx    查看nginx安装列表，可以看到nginx所有的安装位置</li>
+<li>总配置文件：/etc/nginx/nginx.conf</li>
+<li>/etc/nginx/conf.d  所有的nginx自定义配置文件</li>
+<li>/var/log/nginx/error.log  错误日志文件</li>
+<li>/usr/share/nginx/html   服务器默认启动目录</li>
+</ol></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://niaidaye.github.io">独钓寒江雪的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","niaidaye/niaidaye.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+
+
+</html>
