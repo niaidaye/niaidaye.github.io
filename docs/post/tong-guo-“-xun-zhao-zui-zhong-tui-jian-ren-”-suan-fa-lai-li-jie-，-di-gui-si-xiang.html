@@ -101,7 +101,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>这就是一个非常标准的递归求解问题的分解过程，去的过程叫“递”，回来的过程叫“归”。基本上，所有的递归问题都可以用递推公式来表示。刚刚这个生活中的例子，我们用递推公式将它表示出来就是这样的：</p>
 $$f(n) = f(n - 1) + 1; f(1) = 1$$
 <p>f(n) 表示你想知道自己在哪一排，f(n-1) 表示前面一排所在的排数，f(1)=1 表示第一排的人知道自己在第一排。同这个递推公式，我们就可以轻松的转化为递归代码，如下：</p>
-<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-k">public</span> <span class="pl-smi">int</span> <span class="pl-s1">function</span>(<span class="pl-smi">int</span> <span class="pl-s1">n</span>){
+<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-k">public</span> <span class="pl-smi">int</span> <span class="pl-en">function</span>(<span class="pl-smi">int</span> <span class="pl-s1">n</span>){
   <span class="pl-k">if</span>(<span class="pl-s1">n</span> == <span class="pl-c1">1</span>) <span class="pl-k">return</span> <span class="pl-c1">1</span>; 				<span class="pl-c">// 对应f(1) = 1</span>
   <span class="pl-k">return</span> <span class="pl-en">function</span>(<span class="pl-s1">n</span> - <span class="pl-c1">1</span>) + <span class="pl-c1">1</span>; <span class="pl-c">// 对应f(n) = f(n - 1) + 1</span>
 }</pre></div>
@@ -133,14 +133,14 @@ $$f(2) = f(2 - 1) + f(2 - 2);f(3) = f(3 - 1) + f(3 - 2)$$
 <p>将递推公式和终止条件结合在一起是这样的</p>
 $$f(n) = f(n - 1) + f(n - 2);| f(2) = 2;f(1) = 1$$
 <p>有了这个公式，在进行代码转换如下：</p>
-<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-k">public</span> <span class="pl-smi">int</span> <span class="pl-s1">function</span>(<span class="pl-smi">int</span> <span class="pl-s1">n</span>){
+<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-k">public</span> <span class="pl-smi">int</span> <span class="pl-en">function</span>(<span class="pl-smi">int</span> <span class="pl-s1">n</span>){
   <span class="pl-k">if</span>(<span class="pl-s1">n</span> = <span class="pl-c1">2</span>) <span class="pl-k">return</span> <span class="pl-c1">2</span>;
   <span class="pl-k">if</span>(<span class="pl-s1">n</span> = <span class="pl-c1">1</span>) <span class="pl-k">return</span> <span class="pl-c1">1</span>;
   <span class="pl-k">return</span> <span class="pl-en">function</span>(<span class="pl-s1">n</span> - <span class="pl-c1">1</span>) + <span class="pl-en">function</span>(<span class="pl-s1">n</span> - <span class="pl-c1">2</span>);
 }</pre></div>
 <p>总结一下：<strong>写递归代码的关键就是找到如何将大问题分解为小问题的规律，并且基于此写出递推公式，然后再推敲终止条件，最后将递推公式和终止条件翻译成代码</strong></p>
 <p>回到开篇提到的最终推荐人的问题， 我的解决方案是这样的</p>
-<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-k">public</span> <span class="pl-smi">long</span> <span class="pl-s1">findRootReferrerId</span>(<span class="pl-smi">long</span> <span class="pl-s1">actorId</span>) {
+<div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-k">public</span> <span class="pl-smi">long</span> <span class="pl-en">findRootReferrerId</span>(<span class="pl-smi">long</span> <span class="pl-s1">actorId</span>) {
   <span class="pl-smi">Long</span> <span class="pl-s1">referrerId</span> = <span class="pl-s1">mapper</span>.<span class="pl-en">getReferrerId</span>(<span class="pl-s1">actorId</span>);
   <span class="pl-k">if</span>(<span class="pl-s1">referrerId</span> == <span class="pl-c1">null</span>) <span class="pl-k">return</span> <span class="pl-s1">actorId</span>;
   <span class="pl-k">return</span> <span class="pl-en">findRootReferrerId</span>(<span class="pl-s1">referrerId</span>);

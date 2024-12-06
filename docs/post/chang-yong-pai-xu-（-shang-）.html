@@ -161,7 +161,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <hr>
 <p>冒泡排序，只会操作相邻的两个数据。每次冒泡操作都会对相邻两个元素进行比价，看是否满足大小关系。如果不满足就让它们互相交换</p>
 <div class="highlight highlight-source-java"><pre class="notranslate">   <span class="pl-c">// 冒泡排序</span>
-    <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">bubbleSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
+    <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-en">bubbleSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
         <span class="pl-k">if</span> (<span class="pl-s1">arr</span> == <span class="pl-c1">null</span> || <span class="pl-s1">arr</span>.<span class="pl-s1">length</span> &lt; <span class="pl-c1">2</span>)
             <span class="pl-k">return</span>; <span class="pl-c">// 数组为空或长度小于2时，无需排序</span>
 
@@ -182,7 +182,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     }
 
 <span class="pl-c">// 交换</span>
-<span class="pl-smi">privat</span> <span class="pl-s1">static</span> <span class="pl-smi">void</span> <span class="pl-s1">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>){
+<span class="pl-smi">privat</span> <span class="pl-s1">static</span> <span class="pl-smi">void</span> <span class="pl-en">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>){
   <span class="pl-smi">int</span> <span class="pl-s1">temp</span> = <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>];
   <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>] = <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>];
   <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>] = <span class="pl-s1">temp</span>;
@@ -221,7 +221,7 @@ $$n * (n - 1) / 2; n是数组元素个数;$$
 <p>首先初始已排序区间只有一个元素，就是数组的第一个元素。插入算法的核心思想是取未排序区间中的元素，在已排序区间中找到合适的插入位置将其插入，并保证已排序区间数据一直有序。重复这个过程，直到未排序区间中元素为空，算法结束。</p>
 <p>插入排序包含两种操作，一种<strong>元素的比较</strong>，一种<strong>元素的移动</strong>。</p>
 <div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-c">// 插入排序</span>
-<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">insertionSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
+<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-en">insertionSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
     <span class="pl-k">if</span> (<span class="pl-s1">arr</span> == <span class="pl-c1">null</span> || <span class="pl-s1">arr</span>.<span class="pl-s1">length</span> &lt; <span class="pl-c1">2</span>)
         <span class="pl-k">return</span>; <span class="pl-c">// 数组为空或长度小于2时，无需排序</span>
 
@@ -267,7 +267,7 @@ $$n * (n - 1) / 2; n是数组元素个数;$$
 <h2>选择（Selection Sort）</h2>
 <p>排序思想：与插入排序类似，将分为<strong>已排序区间</strong>和<strong>未排序区间</strong>，每次从未排序区间找到最小元素，将其放入到已排序区间的末尾。</p>
 <div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-c">// 选择排序</span>
-<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">selectionSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
+<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-en">selectionSort</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>) {
     <span class="pl-k">if</span> (<span class="pl-s1">arr</span> == <span class="pl-c1">null</span> || <span class="pl-s1">arr</span>.<span class="pl-s1">length</span> &lt; <span class="pl-c1">2</span>)
         <span class="pl-k">return</span>; <span class="pl-c">// 数组为空或长度小于2时，无需排序</span>
 
@@ -295,7 +295,7 @@ $$n * (n - 1) / 2; n是数组元素个数;$$
 }
 
 <span class="pl-c">// 交换数组中两个元素的位置</span>
-<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>) {
+<span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-en">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>) {
     <span class="pl-smi">int</span> <span class="pl-s1">temp</span> = <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>];
     <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>] = <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>];
     <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>] = <span class="pl-s1">temp</span>;
@@ -325,7 +325,7 @@ $$n * (n - 1) / 2; n是数组元素个数;$$
 </blockquote>
 <p>冒泡、选择排序都涉及到，数据的交换</p>
 <div class="highlight highlight-source-java"><pre class="notranslate"><span class="pl-c">// 交换数组中两个元素的位置</span>
-<span class="pl-k">private</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-s1">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>) {
+<span class="pl-k">private</span> <span class="pl-k">static</span> <span class="pl-smi">void</span> <span class="pl-en">swap</span>(<span class="pl-smi">int</span>[] <span class="pl-s1">arr</span>, <span class="pl-smi">int</span> <span class="pl-s1">i</span>, <span class="pl-smi">int</span> <span class="pl-s1">j</span>) {
     <span class="pl-smi">int</span> <span class="pl-s1">temp</span> = <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>];
     <span class="pl-s1">arr</span>[<span class="pl-s1">i</span>] = <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>];
     <span class="pl-s1">arr</span>[<span class="pl-s1">j</span>] = <span class="pl-s1">temp</span>;
